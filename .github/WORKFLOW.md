@@ -1,5 +1,22 @@
 # Operating the pipeline
 
+## Scaffold publication policy (takes precedence over inherited release instructions)
+
+Public releases, package publication, deployments, previews and announcements are
+disabled for this scaffold. The inherited release/publish workflow jobs and the
+next-lane preview job have unconditional false guards. Tags and repository variables
+are not approval. Do not re-enable these jobs, push local work to a public repository,
+or announce the project without explicit approval. Existing template automation is
+retained for future reviewed adoption; do not run `make tag-release` or bootstrap
+remote repository settings as part of local setup.
+
+Feature branches and local checks remain supported. `make ci` verifies the package
+and inherited template tests. The added `scaffold-ci.yml` runs read-only checks on
+pushes and pull requests without requiring release-app credentials. It publishes
+no artifacts. The current remote default is `main`; the template's `dev`/`next`
+lanes have not been bootstrapped.
+
+
 How to set up a repository generated from this template and run the release flow. Rules live in
 [`BRANCH-AND-RELEASE-POLICY.md`](./BRANCH-AND-RELEASE-POLICY.md), stages in [`LIFECYCLE.md`](./LIFECYCLE.md).
 

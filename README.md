@@ -1,3 +1,79 @@
+# Release Team
+
+Five portable release agents with validated handoffs, a Python CLI and an
+OpenAI-first provider boundary. This initial scaffold generates **drafts and
+plans**. Public publishing and real media capture are not enabled.
+
+## Run locally (Python 3.11+, uv)
+
+```sh
+make setup
+uv run release-team validate
+uv run release-team agents
+uv run release-team run examples/analyze.json
+uv run release-team plan "Prepare the next release" > workflow.json
+uv run release-team workflow workflow.json
+make ci
+```
+
+The default runtime is a deterministic offline demo; it makes no API calls.
+Every result labels this limitation. Exit codes: `0` completed, `1` blocked/failed
+or approval required, `2` invalid input/configuration. Stdout contains JSON.
+
+For live draft generation, install `uv sync --extra openai`, configure
+`OPENAI_API_KEY` outside git, and select a model explicitly:
+
+```sh
+uv run release-team run examples/analyze.json --runtime openai --model "$OPENAI_MODEL"
+```
+
+Only this explicit runtime sends task data to OpenAI. Model access depends on your
+account. CI uses mocked provider responses; no paid evaluations run by default.
+
+## Agents and scope
+
+| Agent | Implemented initial action |
+|---|---|
+| `orchestrator` | Release plan and deterministic dependency routing |
+| `release-analyst` | Release-impact draft from supplied evidence |
+| `documentation` | Documentation draft for review |
+| `media-capture` | Stable-ID capture plan; capture adapters are planned |
+| `social-publisher` | Announcement draft; publishing is blocked |
+
+The canonical registry, standalone agent/skill YAML and JSON Schemas ship in
+`src/release_team/assets/`. They contain no provider-specific execution code.
+Use `uv run release-team schema task` to inspect a contract and
+`uv run python scripts/export-specs.py --check` to verify generated exports.
+Add providers through the `Runtime` protocol; no contract changes are needed.
+
+Read [architecture and approval boundaries](docs/architecture.md) for contracts,
+workflow execution, runtime behavior and planned adapters. The sibling
+[gpui-automation](https://github.com/emmanuel-defreitas/gpui-automation) crate
+defines the future native interaction boundary; it is not connected yet.
+
+## Scaffold publication policy (takes precedence over inherited release instructions)
+
+Public releases, package publication, deployments, previews and announcements are
+disabled for this scaffold. The inherited release/publish workflow jobs and the
+next-lane preview job have unconditional false guards. Tags and repository variables
+are not approval. Do not re-enable these jobs, push local work to a public repository,
+or announce the project without explicit approval. Existing template automation is
+retained for future reviewed adoption; do not run `make tag-release` or bootstrap
+remote repository settings as part of local setup.
+
+Feature branches and local checks remain supported. `make ci` verifies the package
+and inherited template tests. The added `scaffold-ci.yml` runs read-only checks on
+pushes and pull requests without requiring release-app credentials. It publishes
+no artifacts. The current remote default is `main`; the template's `dev`/`next`
+lanes have not been bootstrapped.
+
+---
+
+# Inherited template reference
+
+The following original template documentation is retained as a reference; the
+scaffold publication policy above overrides its automatic release instructions.
+
 # `corpora-template`
 
 <!-- Replace this title and paragraph with your project. Keep the sections below that still apply. -->

@@ -1,0 +1,17 @@
+apiVersion: release-team.dev/v1alpha1
+kind: Skill
+metadata:
+  id: documentation-editing
+  name: Documentation Editing
+  version: 0.1.0
+spec:
+  description: Draft documentation from verified change evidence.
+  adapter: documentation-editing
+  implementation_status: draft-only
+  capabilities:
+  - draft
+  requirements: []
+  permissions:
+    repository: read
+    artifacts: draft
+    public_publish: false

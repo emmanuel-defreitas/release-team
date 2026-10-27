@@ -49,8 +49,9 @@ jobs:
           make cut-release
 
   preview:
+    # Disabled until an explicitly approved publication change.
+    if: ${{ false }}
     name: preview
-    if: ${{ vars.PREVIEW_DEPLOY_COMMAND != '' }}
     runs-on: ubuntu-latest
     environment: preview
     env:
