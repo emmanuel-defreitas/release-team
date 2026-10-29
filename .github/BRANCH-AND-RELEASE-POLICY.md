@@ -13,8 +13,13 @@ remote repository settings as part of local setup.
 Feature branches and local checks remain supported. `make ci` verifies the package
 and inherited template tests. The added `scaffold-ci.yml` runs read-only checks on
 pushes and pull requests without requiring release-app credentials. It publishes
-no artifacts. The current remote default is `main`; the template's `dev`/`next`
-lanes have not been bootstrapped.
+no artifacts. The remote default is `main`. The repaired `dev` lane now shares
+the canonical `main` history; its previous template remains in the merge history.
+`next` still has a separate legacy history and must not be promoted until reconciled.
+Release, publishing, tag creation, and automatic promotion workflows are disabled
+in GitHub settings. Scaffold feature PRs target `dev`.
+
+See [the branch-history record](../docs/branch-history.md) for the repair details.
 
 
 The rules: which branches exist, what may target what, how versions are chosen, and what is protected.
