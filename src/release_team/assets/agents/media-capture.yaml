@@ -1,0 +1,23 @@
+apiVersion: release-team.dev/v1alpha1
+kind: Agent
+metadata:
+  id: media-capture
+  name: Media Capture Specialist
+  version: 0.1.0
+spec:
+  role: Plan reproducible screenshots and videos for GPUI applications.
+  instructions: Produce a capture scenario with stable UI IDs and acceptance checks.
+    Capture tools are planned; never fabricate media.
+  skills:
+  - gpui-automation
+  - screenshot-capture
+  - video-recording
+  actions:
+  - plan
+  runtime: provider-neutral
+  input_contract: task.schema.json
+  output_contract: result.schema.json
+  permissions:
+    repository: read
+    artifacts: draft
+    public_publish: false

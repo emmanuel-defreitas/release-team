@@ -1,0 +1,17 @@
+apiVersion: release-team.dev/v1alpha1
+kind: Skill
+metadata:
+  id: social-publishing
+  name: Social Publishing
+  version: 0.1.0
+spec:
+  description: Prepare announcements; publication adapter remains disabled.
+  adapter: social-publishing
+  implementation_status: draft-only
+  capabilities:
+  - draft
+  requirements: []
+  permissions:
+    repository: read
+    artifacts: draft
+    public_publish: false

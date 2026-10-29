@@ -1,0 +1,40 @@
+{
+  "additionalProperties": false,
+  "description": "A record supplied by a trusted host, never by a model or task payload.",
+  "properties": {
+    "task_id": {
+      "format": "uuid",
+      "title": "Task Id",
+      "type": "string"
+    },
+    "workflow_id": {
+      "format": "uuid",
+      "title": "Workflow Id",
+      "type": "string"
+    },
+    "destination": {
+      "minLength": 1,
+      "title": "Destination",
+      "type": "string"
+    },
+    "content_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Content Sha256",
+      "type": "string"
+    },
+    "approved_by": {
+      "minLength": 1,
+      "title": "Approved By",
+      "type": "string"
+    }
+  },
+  "required": [
+    "task_id",
+    "workflow_id",
+    "destination",
+    "content_sha256",
+    "approved_by"
+  ],
+  "title": "Approval",
+  "type": "object"
+}

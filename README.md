@@ -1,172 +1,246 @@
-# `corpora-template`
+# Release Team
 
-## Integration baseline
+[![CI](https://github.com/emmanuel-defreitas/release-team/actions/workflows/scaffold-ci.yml/badge.svg?branch=feat%2Finitial-agent-scaffold)](https://github.com/emmanuel-defreitas/release-team/actions/workflows/scaffold-ci.yml?query=branch%3Afeat%2Finitial-agent-scaffold)
+[![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-blue)](pyproject.toml)
+[![MIT license](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
-This `dev` baseline joins the two original Git histories using the canonical
-`main` template. The previous `dev` commits remain reachable; no force-push or
-history deletion is used. Product scaffolding and its beginner README remain
-in the separate feature pull request for review.
+Release Team has five AI helpers for preparing a software release. They help plan
+the work and draft release notes, documentation, and announcements.
 
-Releases, publishing, tag creation, and automatic promotion are disabled.
-The legacy `next` lane is outside this repair. Do not run release/bootstrap
-commands from the inherited template instructions below.
+This is an early version. It creates drafts and plans. It does not edit your
+project, take screenshots, or post announcements. Releases and publishing are disabled.
 
-Read the [branch-history record](docs/branch-history.md) for the exact commits.
+[Setup](#set-up-your-computer) · [Free demo](#run-the-free-demo) ·
+[Workflow](#try-a-five-step-workflow) · [OpenAI](#optional-use-openai) · [Help](#get-help)
 
-<!-- Replace this title and paragraph with your project. Keep the sections below that still apply. -->
+## Set up your computer
 
-A GitHub template with the boring-but-essential parts already wired: SemVer releases driven by Conventional
-Commits, CI that adapts to your stack, secrets handling, end-to-end test hooks, and guidance for AI coding agents.
-It works the same for **Rust + GPUI, Python, TypeScript, React, Expo, SwiftUI** and projects that **build AI
-agents**, and it stays green before you have written any product code.
+Allow 10–15 minutes if the tools below are already installed. First-time tool
+downloads may take another 20–30 minutes. You need an internet connection for setup.
 
-## What you get
+### 1. Open Terminal
 
-| Area         | What is included                                                                                            |
-| ------------ | ----------------------------------------------------------------------------------------------------------- |
-| Dev cycle    | One `make` entry point; stack auto-detection; `make doctor`, `setup`, `dev`, `fmt`, `ci`                    |
-| CI           | PR gate (`guard`, `check`, `e2e`, `package`), nightly matrix, CodeQL, dependency review                     |
-| Releases     | `dev -> next -> release/vX.Y.Z -> main`, SemVer from commits, generated changelog, tags, GitHub Releases    |
-| Publishing   | Opt-in PyPI (OIDC), npm (provenance), crates.io, EAS, custom deploy; artifacts attached to releases         |
-| Secrets      | gitleaks hook and CI gate, `.env` workflow, push to GitHub secrets, push protection on                      |
-| Repo as code | `.github/settings.yml`, branch/tag rulesets, labels, generated Dependabot config                            |
-| AI agents    | `AGENTS.md`, `CLAUDE.md`, Copilot instructions, ten skills in `.github/skills/`, validator                  |
-| Community    | Issue forms, PR template, `CODEOWNERS`, `SECURITY.md`, `CODE_OF_CONDUCT.md`, `CONTRIBUTING.md`, MIT license |
-| Self-tests   | `make selftest` tests the automation scripts themselves                                                     |
+Terminal is the app where you type commands.
 
-## Quick start
+- **macOS:** open Spotlight with Command + Space, type `Terminal`, and press Return.
+- **Ubuntu:** press Ctrl + Alt + T.
 
-```bash
-make doctor     # which tools are missing for the stacks detected here
-make setup      # deps, git hooks, .env, commit template, agent skill links
-make ci         # exactly what CI runs on a pull request
+Paste one command block at a time. Wait until it finishes before starting the next.
+Do not copy the surrounding backticks.
+
+### 2. Install the tools for your computer
+
+Choose the instructions for your system. You only need to do this once.
+
+#### macOS
+
+Install [Homebrew](https://brew.sh/) if you do not have it. Follow its installer’s
+“Next steps” instructions, then open a new Terminal window.
+
+Install Git, jq, and uv:
+
+```sh
+brew install git jq uv
 ```
 
-With no manifest present every task is a no-op, so this passes on a fresh copy. Add `pyproject.toml`,
-`package.json`, `Cargo.toml` or `Package.swift` and the same commands start running your tools.
+Git downloads the project. jq helps check data. uv installs Python and the
+project’s Python packages. Apple’s command-line tools also provide `make`.
+If an Apple tools installer appears, finish it before continuing.
 
-### Use it for a new project
+#### Ubuntu
 
-1. Click **Use this template** and clone the new repository.
-2. Replace this README, `LICENSE` (holder), `SECURITY.md` and `CODE_OF_CONDUCT.md` contacts
-   (`REPLACE_ME@example.com`), and `.github/CODEOWNERS`.
-3. Create the automation GitHub App and set `AUTOMATION_APP_ID` / `AUTOMATION_APP_PRIVATE_KEY`
-   ([details](.github/WORKFLOW.md#2-secrets-and-variables)).
-4. `make repo-bootstrap` creates `dev` and `next`, makes `dev` the default branch, and applies settings,
-   labels, rulesets and security features.
-5. `make setup`, add your first stack manifest, then `make dependabot`.
-6. Delete the skills and `.env.example` sections for stacks you do not use. [`TODO.md`](TODO.md) has the full checklist.
+Install the basic tools:
 
-## Commands
-
-Every dev and CI step is a target; run `make help` for the full list.
-
-| Task                           | Command                                                                        |
-| ------------------------------ | ------------------------------------------------------------------------------ |
-| Check tools / first-time setup | `make doctor` / `make setup`                                                   |
-| Run the app                    | `make dev`                                                                     |
-| Format and autofix / verify    | `make fmt` / `make lint-check`                                                 |
-| Types, unit tests, build       | `make typecheck`, `make test`, `make build`                                    |
-| End-to-end tests, agent evals  | `make e2e`, `make eval`                                                        |
-| Everything CI runs on a PR     | `make ci`                                                                      |
-| Release artifacts              | `make pack`                                                                    |
-| Test the repo's own automation | `make selftest`                                                                |
-| Validate skills / instructions | `make agents-check`                                                            |
-| Secrets                        | `make env-init`, `env-check`, `secrets-scan`, `secrets-push`, `secrets-doctor` |
-| Versions and releases          | `make bump-info`, `next-version`, `changelog`, `cut-release`                   |
-| Repo settings                  | `make settings-apply`, `labels`, `rulesets-apply`, `dependabot`                |
-
-Override any task for any stack: `make test TEST_CMD="pytest -x"`. Force the stack list with
-`STACKS="python node"`. Monorepos: only root manifests are detected, so set the overrides.
-
-### Stack detection
-
-| Stack            | Detected by                    | `lint` / `typecheck`                | `test` / `e2e`                                     |
-| ---------------- | ------------------------------ | ----------------------------------- | -------------------------------------------------- |
-| Python (uv)      | `pyproject.toml`               | ruff; mypy, pyright or ty           | pytest; `tests/e2e/`, evals in `tests/evals/`      |
-| TypeScript/React | `package.json`                 | package scripts `lint`, `typecheck` | `test`; `test:e2e` or Playwright                   |
-| Expo             | `expo` dependency              | as above                            | Maestro flows in `.maestro/`                       |
-| Rust + GPUI      | `Cargo.toml`                   | `cargo fmt`, `clippy -D warnings`   | `cargo test`/nextest; `tests/e2e.rs`               |
-| SwiftUI          | `Package.swift` / `.xcodeproj` | SwiftLint, swift-format             | `swift test` / `xcodebuild`; `XCODE_UITEST_TARGET` |
-
-The package manager comes from the lockfile (bun, pnpm, yarn, npm). Swift and GPUI run on macOS runners; set the
-`CI_RUNNERS` variable to change that.
-
-## Branching and releases
-
-```text
-<type>/<slug> --squash--> dev --promote--> next --cut--> release/vX.Y.Z --draft PR--> main --> vX.Y.Z
+```sh
+sudo apt-get update
+sudo apt-get install -y git make jq curl ca-certificates
 ```
 
-- Branch from `dev` as `<type>/<slug>` (`feat/123-add-parser`); types: `feat fix chore docs ci refactor test perf build style revert ai`.
-- The **PR title** must be a Conventional Commit (`feat(scope)!: summary`). It becomes the squash commit and sets
-  the bump: `!` or `BREAKING CHANGE` major, `feat` minor, anything else patch.
-- `dev` is promoted to `next` nightly or on demand; a push to `next` cuts `release/vX.Y.Z` with version files and
-  a changelog section and opens a draft PR into `main`; merging it tags and publishes the release.
+Install uv using its [official installer](https://docs.astral.sh/uv/getting-started/installation/):
 
-Details: [policy](.github/BRANCH-AND-RELEASE-POLICY.md), [stages](.github/LIFECYCLE.md),
-[operations and troubleshooting](.github/WORKFLOW.md).
-
-## Secrets
-
-Credentials must never reach a commit. Three layers:
-
-1. **`.env` is gitignored**; commit `.env.example` with `REPLACE_ME` placeholders. `make env-init` creates `.env`
-   with mode 600 and `make env-check` diffs the keys.
-2. **gitleaks pre-commit hook** (`make setup` installs it). It is advisory: `--no-verify` skips it, so never use it.
-3. **`Secret Scan` workflow** is the real gate. `Detect hardcoded secrets` is a required check on `dev`, `next`
-   and `main`; GitHub push protection and secret scanning are switched on by `make settings-apply`.
-
-If a secret leaks: rotate it first, then remove it. To load values into CI use
-`make secrets-push ENV_FILE=.env.ci ENVIRONMENT=preview` (names are shown for confirmation, values never printed).
-`.gitleaks.toml` allowlists only template placeholders; keep it narrow.
-
-## Testing
-
-- `make test` runs fast unit and integration tests. End-to-end suites (`make e2e`) and agent evals (`make eval`)
-  are separate on purpose.
-- CI runs e2e on PRs into `next` or `main`, on PRs labelled `run-e2e`, on pushes to `next`, and nightly.
-- `make selftest` covers this repository's own scripts (`tests/template/`); it runs inside `make ci`.
-
-## AI agents
-
-| File                              | Role                                                                              |
-| --------------------------------- | --------------------------------------------------------------------------------- |
-| `AGENTS.md`                       | Canonical rules for every agent; edit this first                                  |
-| `CLAUDE.md`                       | Imports `AGENTS.md`, adds Claude Code specifics                                   |
-| `.github/copilot-instructions.md` | Short form for GitHub Copilot                                                     |
-| `.github/skills/*/SKILL.md`       | Task skills: dev cycle, release flow, secrets, e2e, one per stack, agent building |
-
-`make agents-link` symlinks `.claude/skills` and `.agents/skills` to `.github/skills` (local only);
-`make agents-check` validates skills and keeps `CLAUDE.md` importing `AGENTS.md`. Keep these files aligned with
-the automation: change them in the same PR.
-
-## Repository layout
-
-```text
-.
-├── makefile                  one entry point for dev and CI
-├── scripts/                  stack runner, versioning, release, secrets, agent assets
-├── tests/template/           tests for scripts/ (make selftest)
-├── .github/
-│   ├── workflows/            pr, secret-scan, security, promote, next, release, publish, matrix, ...
-│   ├── actions/setup/        detects stacks, installs only their toolchains
-│   ├── rulesets/ settings.yml  branch protection and repo settings as code
-│   ├── scripts/              bootstrap-repo, apply-settings, apply-rulesets
-│   ├── skills/               agent skills
-│   ├── ISSUE_TEMPLATE/ PULL_REQUEST_TEMPLATE.md CODEOWNERS
-│   └── WORKFLOW.md LIFECYCLE.md BRANCH-AND-RELEASE-POLICY.md
-├── .devcontainer/            Codespaces and dev containers
-├── AGENTS.md CLAUDE.md
-├── CONTRIBUTING.md SECURITY.md CODE_OF_CONDUCT.md LICENSE TODO.md CHANGELOG.md VERSION
-└── .env.example .gitmessage .pre-commit-config.yaml .gitleaks.toml
+```sh
+curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
-`VERSION` is the fallback version file while no stack manifest declares one; delete it once `pyproject.toml`,
-`Cargo.toml`, `package.json` or an Xcode project carries the version.
+Open a new Terminal window so it can find uv.
 
-## Contributing and security
+#### Check that the tools are ready
 
-Read [CONTRIBUTING.md](CONTRIBUTING.md) first. Report vulnerabilities privately as described in
-[SECURITY.md](SECURITY.md). Participation is governed by the [Code of Conduct](CODE_OF_CONDUCT.md).
-Licensed under the [MIT License](LICENSE).
+```sh
+git --version
+make --version
+jq --version
+uv --version
+```
+
+Each command should print a version number. You do not need to install Python
+separately: uv downloads the Python version recorded by this project when needed.
+
+### 3. Download Release Team
+
+```sh
+git clone --branch feat/initial-agent-scaffold https://github.com/emmanuel-defreitas/release-team.git
+cd release-team
+```
+
+Use this branch because `main` does not yet contain the working scaffold.
+Run the remaining commands inside the `release-team` folder.
+
+### 4. Install the project’s packages
+
+```sh
+uv sync --locked
+```
+
+`--locked` uses the package versions saved with the project. uv creates a local
+`.venv` folder for them. You do not need to activate that folder yourself.
+
+Check the setup:
+
+```sh
+uv run --locked release-team validate
+```
+
+You should see:
+
+```json
+{"valid": true, "agents": 5, "skills": 7}
+```
+
+Your setup is ready when `valid` is `true`.
+
+## Run the free demo
+
+No API key or paid AI account is needed for this demo.
+
+### 1. List the helpers
+
+```sh
+uv run --locked release-team agents
+```
+
+| Helper | What it prepares |
+|---|---|
+| `orchestrator` | A plan for the release work |
+| `release-analyst` | A draft review of the supplied changes |
+| `documentation` | A documentation draft |
+| `media-capture` | A plan for screenshots or videos |
+| `social-publisher` | An announcement draft for review |
+
+### 2. Run the example task
+
+```sh
+uv run --locked release-team run examples/analyze.json
+```
+
+The result is JSON: text with named fields. Look for `"status": "completed"`
+and `"runtime": "offline"`.
+
+Offline mode returns placeholder drafts so you can try the steps. It does not
+use an AI model or inspect a Git repository. Here, `completed` means the demo
+draft was produced, not that a real release was prepared.
+
+## Try a five-step workflow
+
+A workflow passes work from one helper to the next.
+
+### 1. Save a plan
+
+```sh
+uv run --locked release-team plan "Prepare a demo release" > workflow.json
+```
+
+This creates `workflow.json` in the current folder. Change the words inside
+the quotes to change the goal.
+
+### 2. Run the plan and save the results
+
+```sh
+uv run --locked release-team workflow workflow.json > results.json
+```
+
+Open `results.json` in a text editor. It should contain five results, each with
+`"status": "completed"` and `"runtime": "offline"`.
+
+To try your own single task, copy `examples/analyze.json` and edit its `objective`
+and `evidence`. Evidence is the information you want the helper to use.
+
+## Optional: use OpenAI
+
+This option sends the task text, supplied evidence, and task artifacts to OpenAI.
+API calls can cost money. You need an OpenAI API key and a model your account can use.
+
+### 1. Enable the OpenAI option
+
+```sh
+uv sync --locked --extra openai
+```
+
+### 2. Create your settings file
+
+```sh
+make env-init
+```
+
+This creates `.env` if it does not already exist. Open `.env` in a text editor.
+Replace the `REPLACE_ME` values on these two lines:
+
+```dotenv
+OPENAI_API_KEY=REPLACE_ME
+OPENAI_MODEL=REPLACE_ME
+```
+
+Use your own API key and an available model ID. Leave the other settings alone;
+this tool does not need them. Keep `.env` private. Git is set to ignore it.
+
+### 3. Ask OpenAI for a draft
+
+```sh
+uv run --locked --env-file .env release-team run examples/analyze.json --runtime openai
+```
+
+`--env-file .env` loads your settings. Without that flag, putting values in `.env`
+alone does not load them for this command.
+
+A successful result has `"status": "completed"` and `"runtime": "openai"`.
+Read the draft before using it. This option still cannot publish or change your project.
+
+## Check your work
+
+Run the same checks used by continuous integration (CI), the automatic checks on GitHub:
+
+```sh
+make ci
+```
+
+The command should finish without an error. It checks the code, runs tests,
+and builds local package files. It does not publish them.
+
+If you plan to change the code, see [Contributing](CONTRIBUTING.md) for the
+developer setup, including Git hooks that check changes before a commit.
+
+## If something goes wrong
+
+| What you see | What to try |
+|---|---|
+| `uv: command not found` | Open a new Terminal window after installing uv. Follow the installer’s PATH instructions if it is still missing. |
+| `pyproject.toml` or an example file is missing | Enter the `release-team` folder and check that you are on `feat/initial-agent-scaffold`. |
+| A tool is missing | Run `make doctor`. Install the tool it names, then retry. |
+| OpenAI reports `Runtime failed` | Check the two settings in `.env`, your model access, and the `--env-file .env` flag. Do not paste your API key into an issue. |
+| A task is `blocked` or `approval_required` | Read its `summary`. Earlier tasks must finish first; publication is intentionally disabled. |
+
+## Get help
+
+Read [How it works](docs/architecture.md) for the task format, approval rules,
+and instructions for adding another AI provider. The agent and skill definitions
+live in [the assets folder](src/release_team/assets/).
+
+The separate [GPUI Automation](https://github.com/emmanuel-defreitas/gpui-automation/tree/feat/initial-automation-scaffold)
+library is the planned connection to desktop apps. The two projects are not connected yet.
+
+Found a problem? [Open an issue](https://github.com/emmanuel-defreitas/release-team/issues).
+Include the command you ran and the error message. Remove keys and private information first.
+
+## License
+
+Release Team uses the [MIT license](LICENSE).
