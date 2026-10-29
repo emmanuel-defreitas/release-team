@@ -68,3 +68,9 @@ When automation changes (Make targets, workflows, branch policy), update `AGENTS
 - Multi-line `description` values break discovery.
 - Skills that document made-up commands mislead agents; verify with `make help`.
 - Guidance files drifting apart gives different agents different rules.
+
+## Initial scaffold
+
+Portable runtime specs live in `src/release_team/assets/`; these are product data, separate from coding-agent skills. Verify exports with `uv run python scripts/export-specs.py --check`.
+
+Publication workflows are disabled. Do not enable or run release/publish commands without explicit approval.

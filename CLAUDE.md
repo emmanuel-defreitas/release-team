@@ -21,3 +21,5 @@ duplicate rules here - `make agents-check` fails if the import above is removed.
 1. `make fmt`, then `make ci` (add `make e2e` when behavior visible to users changed).
 2. Update `AGENTS.md`, `README.md` and `.github/copilot-instructions.md` if conventions or automation moved.
 3. Propose a branch name `<type>/<slug>` and a Conventional Commit PR title; say what you validated.
+
+Scaffold publication is disabled. Follow the overriding policy in AGENTS.md; no public push or announcement without explicit approval.

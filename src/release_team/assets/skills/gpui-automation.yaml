@@ -1,0 +1,21 @@
+apiVersion: release-team.dev/v1alpha1
+kind: Skill
+metadata:
+  id: gpui-automation
+  name: Gpui Automation
+  version: 0.1.0
+spec:
+  description: Run stable-ID scenarios through an app-owned Rust bridge.
+  adapter: gpui-automation
+  implementation_status: planned
+  capabilities:
+  - inspect
+  - click
+  - type
+  - scenario
+  requirements:
+  - host adapter
+  permissions:
+    repository: read
+    artifacts: draft
+    public_publish: false

@@ -37,6 +37,8 @@ env:
 
 jobs:
   detect:
+    # Disabled until an explicitly approved publication change.
+    if: ${{ false }}
     runs-on: ubuntu-latest
     outputs:
       runner: ${{ steps.runners.outputs.runner }}
@@ -56,6 +58,8 @@ jobs:
           else echo "publish=false" >> "$GITHUB_OUTPUT"; fi
 
   build:
+    # Disabled until an explicitly approved publication change.
+    if: ${{ false }}
     name: build
     needs: detect
     runs-on: ${{ needs.detect.outputs.runner }}
@@ -70,9 +74,10 @@ jobs:
           if-no-files-found: ignore
 
   release-assets:
+    # Disabled until an explicitly approved publication change.
+    if: ${{ false }}
     name: release-assets
     needs: build
-    if: ${{ startsWith(github.ref, 'refs/tags/v') }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -95,9 +100,10 @@ jobs:
           fi
 
   publish-pypi:
+    # Disabled until an explicitly approved publication change.
+    if: ${{ false }}
     name: publish-pypi
     needs: [detect, build]
-    if: ${{ needs.detect.outputs.publish == 'true' && vars.PUBLISH_PYPI == 'true' }}
     runs-on: ubuntu-latest
     environment:
       name: pypi
@@ -118,9 +124,10 @@ jobs:
           packages-dir: pypi-dist/
 
   publish-npm:
+    # Disabled until an explicitly approved publication change.
+    if: ${{ false }}
     name: publish-npm
     needs: [detect, build]
-    if: ${{ needs.detect.outputs.publish == 'true' && vars.PUBLISH_NPM == 'true' }}
     runs-on: ubuntu-latest
     environment:
       name: npm
@@ -139,9 +146,10 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   publish-crates:
+    # Disabled until an explicitly approved publication change.
+    if: ${{ false }}
     name: publish-crates
     needs: [detect, build]
-    if: ${{ needs.detect.outputs.publish == 'true' && vars.PUBLISH_CRATES == 'true' }}
     runs-on: ubuntu-latest
     environment:
       name: crates
@@ -155,9 +163,10 @@ jobs:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
 
   eas-build:
+    # Disabled until an explicitly approved publication change.
+    if: ${{ false }}
     name: eas-build
     needs: [detect, build]
-    if: ${{ needs.detect.outputs.publish == 'true' && vars.EAS_BUILD_PROFILE != '' }}
     runs-on: ubuntu-latest
     environment:
       name: eas
@@ -171,9 +180,10 @@ jobs:
         run: npx --yes eas-cli build --non-interactive --no-wait --platform all --profile "$EAS_BUILD_PROFILE"
 
   deploy:
+    # Disabled until an explicitly approved publication change.
+    if: ${{ false }}
     name: deploy
     needs: [detect, build]
-    if: ${{ needs.detect.outputs.publish == 'true' && vars.DEPLOY_COMMAND != '' }}
     runs-on: ubuntu-latest
     environment:
       name: production

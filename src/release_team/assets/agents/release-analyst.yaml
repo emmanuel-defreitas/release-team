@@ -1,0 +1,21 @@
+apiVersion: release-team.dev/v1alpha1
+kind: Agent
+metadata:
+  id: release-analyst
+  name: Release Impact Analyst
+  version: 0.1.0
+spec:
+  role: Assess supplied changes, compatibility risks, and release impact.
+  instructions: Separate observed changes from inference. Cite supplied evidence.
+    Do not claim repository access.
+  skills:
+  - git-analysis
+  actions:
+  - analyze
+  runtime: provider-neutral
+  input_contract: task.schema.json
+  output_contract: result.schema.json
+  permissions:
+    repository: read
+    artifacts: draft
+    public_publish: false

@@ -1,5 +1,27 @@
 # Lifecycle: from issue to release
 
+## Scaffold publication policy (takes precedence over inherited release instructions)
+
+Public releases, package publication, deployments, previews and announcements are
+disabled for this scaffold. The inherited release/publish workflow jobs and the
+next-lane preview job have unconditional false guards. Tags and repository variables
+are not approval. Do not re-enable these jobs, push local work to a public repository,
+or announce the project without explicit approval. Existing template automation is
+retained for future reviewed adoption; do not run `make tag-release` or bootstrap
+remote repository settings as part of local setup.
+
+Feature branches and local checks remain supported. `make ci` verifies the package
+and inherited template tests. The added `scaffold-ci.yml` runs read-only checks on
+pushes and pull requests without requiring release-app credentials. It publishes
+no artifacts. The remote default is `main`. The repaired `dev` lane now shares
+the canonical `main` history; its previous template remains in the merge history.
+`next` still has a separate legacy history and must not be promoted until reconciled.
+Release, publishing, tag creation, and automatic promotion workflows are disabled
+in GitHub settings. Scaffold feature PRs target `dev`.
+
+See [the branch-history record](../docs/branch-history.md) for the repair details.
+
+
 What fires when. Rules are in [`BRANCH-AND-RELEASE-POLICY.md`](./BRANCH-AND-RELEASE-POLICY.md); setup and
 troubleshooting are in [`WORKFLOW.md`](./WORKFLOW.md). Every step is a `make` target, so you can run it locally.
 

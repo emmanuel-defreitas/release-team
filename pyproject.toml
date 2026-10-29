@@ -1,0 +1,41 @@
+[build-system]
+requires = ["hatchling>=1.27,<2"]
+build-backend = "hatchling.build"
+
+[project]
+name = "release-team"
+version = "0.0.0"
+description = "Portable, approval-aware release agent scaffolding"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+dependencies = ["pydantic>=2.10,<3", "PyYAML>=6,<7"]
+classifiers = ["Private :: Do Not Upload"]
+
+[project.optional-dependencies]
+openai = ["openai>=2,<3"]
+
+[project.scripts]
+release-team = "release_team.cli:main"
+
+[dependency-groups]
+dev = ["pytest>=8,<10", "ruff>=0.11,<1", "mypy>=1.15,<2", "types-PyYAML>=6", "jsonschema>=4,<5", "types-jsonschema>=4", "openai>=2,<3"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/release_team"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.mypy]
+strict = true
+files = ["src", "tests"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--strict-markers"
+markers = ["e2e: end-to-end tests", "eval: paid model evaluations"]

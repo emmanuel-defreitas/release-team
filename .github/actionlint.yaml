@@ -1,0 +1,12 @@
+# Publication jobs are deliberately disabled, not accidentally constant.
+# Keep all other workflow diagnostics enabled.
+paths:
+  .github/workflows/release.yml:
+    ignore:
+      - 'constant expression "false" in condition'
+  .github/workflows/publish.yml:
+    ignore:
+      - 'constant expression "false" in condition'
+  .github/workflows/next.yml:
+    ignore:
+      - 'constant expression "false" in condition'
