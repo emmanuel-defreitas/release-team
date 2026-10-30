@@ -1,6 +1,6 @@
 # Release Team
 
-[![CI](https://github.com/emmanuel-defreitas/release-team/actions/workflows/scaffold-ci.yml/badge.svg?branch=feat%2Finitial-agent-scaffold)](https://github.com/emmanuel-defreitas/release-team/actions/workflows/scaffold-ci.yml?query=branch%3Afeat%2Finitial-agent-scaffold)
+[![CI](https://github.com/emmanuel-defreitas/release-team/actions/workflows/scaffold-ci.yml/badge.svg?branch=main)](https://github.com/emmanuel-defreitas/release-team/actions/workflows/scaffold-ci.yml?query=branch%3Amain)
 [![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-blue)](pyproject.toml)
 [![MIT license](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
@@ -8,10 +8,44 @@ Release Team has five AI helpers for preparing a software release. They help pla
 the work and draft release notes, documentation, and announcements.
 
 This is an early version. It creates drafts and plans. It does not edit your
-project, take screenshots, or post announcements. Releases and publishing are disabled.
+project, take screenshots, or post announcements. Package publishing is manual and disabled until the first upload is approved.
 
 [Setup](#set-up-your-computer) · [Free demo](#run-the-free-demo) ·
 [Workflow](#try-a-five-step-workflow) · [OpenAI](#optional-use-openai) · [Help](#get-help)
+
+## Install from PyPI (after the first release)
+
+The workflow is ready for review. This change does **not** publish a package.
+Until the owner announces an approved version here, use the source setup below.
+Do not install an unverified package that happens to use this name.
+
+After an approved version is available, open Terminal and run:
+
+```sh
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install release-team
+release-team validate
+```
+
+You need Python 3.11 or newer. On Windows, activate with `.venv\Scripts\activate`.
+The check should report `"valid": true`, five agents, and seven skills.
+
+To use this library inside another Python project:
+
+```python
+from release_team.contracts import Task
+
+task = Task(
+    agent="release-analyst",
+    action="analyze",
+    objective="Review the supplied changes",
+)
+```
+
+For OpenAI support, install `"release-team[openai]"` instead. The source tutorials
+below use uv and include the example files; a pip install does not download those files.
+See [Publishing](docs/publishing.md) for the maintainer setup.
 
 ## Set up your computer
 
@@ -79,11 +113,11 @@ separately: uv downloads the Python version recorded by this project when needed
 ### 3. Download Release Team
 
 ```sh
-git clone --branch feat/initial-agent-scaffold https://github.com/emmanuel-defreitas/release-team.git
+git clone --branch main https://github.com/emmanuel-defreitas/release-team.git
 cd release-team
 ```
 
-Use this branch because `main` does not yet contain the working scaffold.
+The `main` branch contains the reviewed library.
 Run the remaining commands inside the `release-team` folder.
 
 ### 4. Install the project’s packages
@@ -224,7 +258,7 @@ developer setup, including Git hooks that check changes before a commit.
 | What you see | What to try |
 |---|---|
 | `uv: command not found` | Open a new Terminal window after installing uv. Follow the installer’s PATH instructions if it is still missing. |
-| `pyproject.toml` or an example file is missing | Enter the `release-team` folder and check that you are on `feat/initial-agent-scaffold`. |
+| `pyproject.toml` or an example file is missing | Enter the `release-team` folder and check that you are on `main`. |
 | A tool is missing | Run `make doctor`. Install the tool it names, then retry. |
 | OpenAI reports `Runtime failed` | Check the two settings in `.env`, your model access, and the `--env-file .env` flag. Do not paste your API key into an issue. |
 | A task is `blocked` or `approval_required` | Read its `summary`. Earlier tasks must finish first; publication is intentionally disabled. |

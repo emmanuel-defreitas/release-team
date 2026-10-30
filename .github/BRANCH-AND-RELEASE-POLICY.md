@@ -1,9 +1,23 @@
 # Branch & Release Policy
 
+## Package publishing (current policy)
+
+The reviewed package workflow is `.github/workflows/package.yml`. PRs and pushes
+build and check packages without publishing them. Publication is manual-only,
+from `main`, with `publish=true`, an exact non-placeholder version, and repository
+variable `PUBLISH_PYPI=true`. Leave that variable unset or false until the owner
+explicitly approves a public package upload. Never dispatch publication on the
+owner's behalf without that approval.
+
+The repository stays private. Registry packages are public, including their bundled
+source files. GitHub Releases, tags, previews, promotion and announcements remain
+disabled. Keep all inherited workflows and their false guards disabled; do not
+use `publish.yml`. See `docs/publishing.md` for setup and first-publication steps.
+
 ## Scaffold publication policy (takes precedence over inherited release instructions)
 
-Public releases, package publication, deployments, previews and announcements are
-disabled for this scaffold. The inherited release/publish workflow jobs and the
+Public releases, deployments, previews and announcements are disabled. Package
+publication follows the manual approval policy above. The inherited release/publish workflow jobs and the
 next-lane preview job have unconditional false guards. Tags and repository variables
 are not approval. Do not re-enable these jobs, push local work to a public repository,
 or announce the project without explicit approval. Existing template automation is
