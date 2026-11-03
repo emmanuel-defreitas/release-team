@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: manual-button-pr-comment
+expected_outcome: |
+  A new workflow under .github/workflows runs release-team plan and workflow from a manual workflow_dispatch button with an objective and a PR number input, posts the drafts as a single updatable PR comment from a separate least-privilege job, and docs are updated. Nothing is pushed or published.
