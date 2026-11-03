@@ -248,6 +248,14 @@ alone does not load them for this command.
 A successful result has `"status": "completed"` and `"runtime": "openai"`.
 Read the draft before using it. This option still cannot publish or change your project.
 
+## Run local Release Team drafts
+
+Run `make release-team-drafts OBJECTIVE="Draft notes"` to produce the same five-agent
+draft workflow locally. It uses offline mode unless both `OPENAI_API_KEY` and
+`OPENAI_MODEL` are set, and writes `plan.json`, `workflow.json`, `results.json`, and
+`summary.md` under the ignored `release-team-out/` directory. The runner never posts,
+publishes, tags, releases, or deploys.
+
 ## Run the team on GitHub
 
 You can also run the five helpers on GitHub, without installing anything, and get

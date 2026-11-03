@@ -67,6 +67,8 @@ Targets detect the stack from `pyproject.toml`, `package.json`, `Cargo.toml` or 
   actions to a commit SHA with a version comment. Keep jobs least-privilege.
   `release-team.yml` is a manual button that runs the agents and posts drafts as a PR comment; it never
   publishes, and only its `comment` job (which has no OpenAI key) may write to PRs.
+- **Release Team runner:** `make release-team-drafts OBJECTIVE="..."` runs draft-only agents locally;
+  it uses offline mode unless OpenAI settings are explicitly present and writes only ignored output.
 - **Docs move with automation:** update `AGENTS.md`, `README.md`, and `.github/WORKFLOW.md` in the same PR.
 - **Template stays generic:** stack specifics go behind `scripts/stack.sh` or `.github/skills/`.
 - **Skills:** `.github/skills/<name>/SKILL.md`, frontmatter `name` equal to the directory and a one-line

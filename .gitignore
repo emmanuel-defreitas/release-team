@@ -9,6 +9,8 @@ cache/
 .expo/
 .cargo/
 # Add any additional files or directories here
+# Release Team drafts written by scripts/release-team-ci.sh run
+release-team-out/
 
 
 # ── Secrets: never commit. Backed by .pre-commit-config.yaml (gitleaks) and

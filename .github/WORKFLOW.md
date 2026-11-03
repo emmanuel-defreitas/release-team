@@ -103,6 +103,11 @@ Locally: `make env-init` creates `.env` (mode 600) from `.env.example`; `make en
 `make secrets-push [ENV_FILE=.env.ci] [ENVIRONMENT=npm]` and `make secrets-vars-push` load dotenv files into
 GitHub (names are listed for confirmation, values never printed); `make secrets-list` shows names only.
 
+For a local Release Team smoke test, run `make release-team-drafts OBJECTIVE="Draft notes"`.
+The runner selects `offline` unless both `OPENAI_API_KEY` and `OPENAI_MODEL` are present, removes the
+key before offline commands, and writes draft JSON plus a summary to ignored `release-team-out/` files.
+It never posts, publishes, tags, releases, or deploys.
+
 ## 3. Day to day
 
 ```bash
