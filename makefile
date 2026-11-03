@@ -255,3 +255,9 @@ agents-check: ## Validate AGENTS.md, CLAUDE.md, copilot instructions and skills.
 .PHONY: agents-link
 agents-link: ## Symlink .claude/skills and .agents/skills to .github/skills (local only).
 	@$(SCRIPTS)/agent-assets.sh link
+
+OBJECTIVE      ?= Prepare the next release
+
+.PHONY: release-team-drafts
+release-team-drafts: ## Run the agents as release-team.yml does (OBJECTIVE=..., REQUESTED_RUNTIME=auto|offline|openai).
+	@OBJECTIVE="$(OBJECTIVE)" $(SCRIPTS)/release-team-ci.sh run
