@@ -2,13 +2,14 @@
 
 ## Current state
 
-The repository is private. No package is published by this change.
+The repository is public for skills.sh distribution. No package is published by this change.
 The new `Package` workflow builds on pull requests and pushes to `main` or `dev`.
 A manual run also builds by default. Its upload job stays off while `PUBLISH_PYPI`
 is unset or `false`.
 
-Packages uploaded to PyPI are public. Keeping GitHub private does not hide the
-package source or README. Review the archive before approving an upload.
+Packages uploaded to PyPI are public. The public repository and any PyPI package
+expose committed source files and documentation. Review the archive before approving
+an upload.
 The workflow creates no GitHub Release, tag, deployment, or announcement.
 The eight inherited release/promotion/publish workflows must remain disabled.
 
