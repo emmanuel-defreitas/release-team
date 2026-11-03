@@ -1,0 +1,17 @@
+apiVersion: release-team.dev/v1alpha1
+kind: Skill
+metadata:
+  id: git-analysis
+  name: Git Analysis
+  version: 0.1.0
+spec:
+  description: Analyze supplied change evidence and recommend release impact.
+  adapter: git-analysis
+  implementation_status: draft-only
+  capabilities:
+  - analyze
+  requirements: []
+  permissions:
+    repository: read
+    artifacts: draft
+    public_publish: false

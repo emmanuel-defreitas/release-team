@@ -1,0 +1,131 @@
+{
+  "$defs": {
+    "Metadata": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "pattern": "^[a-z][a-z0-9-]*$",
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "version": {
+          "title": "Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "version"
+      ],
+      "title": "Metadata",
+      "type": "object"
+    },
+    "Permissions": {
+      "additionalProperties": false,
+      "properties": {
+        "repository": {
+          "default": "read",
+          "enum": [
+            "read",
+            "none"
+          ],
+          "title": "Repository",
+          "type": "string"
+        },
+        "artifacts": {
+          "const": "draft",
+          "default": "draft",
+          "title": "Artifacts",
+          "type": "string"
+        },
+        "public_publish": {
+          "const": false,
+          "default": false,
+          "title": "Public Publish",
+          "type": "boolean"
+        }
+      },
+      "title": "Permissions",
+      "type": "object"
+    },
+    "SkillBody": {
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "title": "Description",
+          "type": "string"
+        },
+        "adapter": {
+          "title": "Adapter",
+          "type": "string"
+        },
+        "implementation_status": {
+          "enum": [
+            "draft-only",
+            "planned"
+          ],
+          "title": "Implementation Status",
+          "type": "string"
+        },
+        "capabilities": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Capabilities",
+          "type": "array"
+        },
+        "requirements": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Requirements",
+          "type": "array"
+        },
+        "permissions": {
+          "$ref": "#/$defs/Permissions"
+        }
+      },
+      "required": [
+        "description",
+        "adapter",
+        "implementation_status",
+        "capabilities",
+        "requirements"
+      ],
+      "title": "SkillBody",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "apiVersion": {
+      "const": "release-team.dev/v1alpha1",
+      "title": "Apiversion",
+      "type": "string"
+    },
+    "kind": {
+      "const": "Skill",
+      "title": "Kind",
+      "type": "string"
+    },
+    "metadata": {
+      "$ref": "#/$defs/Metadata"
+    },
+    "spec": {
+      "$ref": "#/$defs/SkillBody"
+    }
+  },
+  "required": [
+    "apiVersion",
+    "kind",
+    "metadata",
+    "spec"
+  ],
+  "title": "SkillSpec",
+  "type": "object"
+}

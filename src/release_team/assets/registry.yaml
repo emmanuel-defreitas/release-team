@@ -1,0 +1,240 @@
+apiVersion: release-team.dev/v1alpha1
+kind: Registry
+agents:
+- apiVersion: release-team.dev/v1alpha1
+  kind: Agent
+  metadata:
+    id: orchestrator
+    name: Orchestrator
+    version: 0.1.0
+  spec:
+    role: Coordinate release tasks, dependencies, evidence, and review gates.
+    instructions: Plan bounded tasks. Preserve evidence and stop dependent work when
+      prerequisites fail.
+    skills:
+    - release-coordination
+    actions:
+    - plan
+    runtime: provider-neutral
+    input_contract: task.schema.json
+    output_contract: result.schema.json
+    permissions:
+      repository: read
+      artifacts: draft
+      public_publish: false
+- apiVersion: release-team.dev/v1alpha1
+  kind: Agent
+  metadata:
+    id: release-analyst
+    name: Release Impact Analyst
+    version: 0.1.0
+  spec:
+    role: Assess supplied changes, compatibility risks, and release impact.
+    instructions: Separate observed changes from inference. Cite supplied evidence.
+      Do not claim repository access.
+    skills:
+    - git-analysis
+    actions:
+    - analyze
+    runtime: provider-neutral
+    input_contract: task.schema.json
+    output_contract: result.schema.json
+    permissions:
+      repository: read
+      artifacts: draft
+      public_publish: false
+- apiVersion: release-team.dev/v1alpha1
+  kind: Agent
+  metadata:
+    id: documentation
+    name: Documentation Specialist
+    version: 0.1.0
+  spec:
+    role: Prepare accurate release notes and documentation drafts.
+    instructions: Draft reviewable documentation. Flag missing evidence. Do not claim
+      files were changed.
+    skills:
+    - documentation-editing
+    actions:
+    - draft
+    runtime: provider-neutral
+    input_contract: task.schema.json
+    output_contract: result.schema.json
+    permissions:
+      repository: read
+      artifacts: draft
+      public_publish: false
+- apiVersion: release-team.dev/v1alpha1
+  kind: Agent
+  metadata:
+    id: media-capture
+    name: Media Capture Specialist
+    version: 0.1.0
+  spec:
+    role: Plan reproducible screenshots and videos for GPUI applications.
+    instructions: Produce a capture scenario with stable UI IDs and acceptance checks.
+      Capture tools are planned; never fabricate media.
+    skills:
+    - gpui-automation
+    - screenshot-capture
+    - video-recording
+    actions:
+    - plan
+    runtime: provider-neutral
+    input_contract: task.schema.json
+    output_contract: result.schema.json
+    permissions:
+      repository: read
+      artifacts: draft
+      public_publish: false
+- apiVersion: release-team.dev/v1alpha1
+  kind: Agent
+  metadata:
+    id: social-publisher
+    name: Social Publisher
+    version: 0.1.0
+  spec:
+    role: Prepare evidence-based announcements for explicit human review.
+    instructions: Draft channel-appropriate content. Publication requires approval
+      bound to exact content and destination and is disabled in this scaffold.
+    skills:
+    - social-publishing
+    actions:
+    - draft
+    - publish
+    runtime: provider-neutral
+    input_contract: task.schema.json
+    output_contract: result.schema.json
+    permissions:
+      repository: read
+      artifacts: draft
+      public_publish: false
+skills:
+- apiVersion: release-team.dev/v1alpha1
+  kind: Skill
+  metadata:
+    id: release-coordination
+    name: Release Coordination
+    version: 0.1.0
+  spec:
+    description: Coordinate dependencies and prepare release plans.
+    adapter: release-coordination
+    implementation_status: draft-only
+    capabilities:
+    - plan
+    - route
+    requirements: []
+    permissions:
+      repository: read
+      artifacts: draft
+      public_publish: false
+- apiVersion: release-team.dev/v1alpha1
+  kind: Skill
+  metadata:
+    id: git-analysis
+    name: Git Analysis
+    version: 0.1.0
+  spec:
+    description: Analyze supplied change evidence and recommend release impact.
+    adapter: git-analysis
+    implementation_status: draft-only
+    capabilities:
+    - analyze
+    requirements: []
+    permissions:
+      repository: read
+      artifacts: draft
+      public_publish: false
+- apiVersion: release-team.dev/v1alpha1
+  kind: Skill
+  metadata:
+    id: documentation-editing
+    name: Documentation Editing
+    version: 0.1.0
+  spec:
+    description: Draft documentation from verified change evidence.
+    adapter: documentation-editing
+    implementation_status: draft-only
+    capabilities:
+    - draft
+    requirements: []
+    permissions:
+      repository: read
+      artifacts: draft
+      public_publish: false
+- apiVersion: release-team.dev/v1alpha1
+  kind: Skill
+  metadata:
+    id: gpui-automation
+    name: Gpui Automation
+    version: 0.1.0
+  spec:
+    description: Run stable-ID scenarios through an app-owned Rust bridge.
+    adapter: gpui-automation
+    implementation_status: planned
+    capabilities:
+    - inspect
+    - click
+    - type
+    - scenario
+    requirements:
+    - host adapter
+    permissions:
+      repository: read
+      artifacts: draft
+      public_publish: false
+- apiVersion: release-team.dev/v1alpha1
+  kind: Skill
+  metadata:
+    id: screenshot-capture
+    name: Screenshot Capture
+    version: 0.1.0
+  spec:
+    description: Capture approved UI scenarios and verify resulting images.
+    adapter: screenshot-capture
+    implementation_status: planned
+    capabilities:
+    - capture
+    - validate
+    requirements:
+    - host adapter
+    permissions:
+      repository: read
+      artifacts: draft
+      public_publish: false
+- apiVersion: release-team.dev/v1alpha1
+  kind: Skill
+  metadata:
+    id: video-recording
+    name: Video Recording
+    version: 0.1.0
+  spec:
+    description: Record repeatable application demonstrations.
+    adapter: video-recording
+    implementation_status: planned
+    capabilities:
+    - record
+    - validate
+    requirements:
+    - host adapter
+    permissions:
+      repository: read
+      artifacts: draft
+      public_publish: false
+- apiVersion: release-team.dev/v1alpha1
+  kind: Skill
+  metadata:
+    id: social-publishing
+    name: Social Publishing
+    version: 0.1.0
+  spec:
+    description: Prepare announcements; publication adapter remains disabled.
+    adapter: social-publishing
+    implementation_status: draft-only
+    capabilities:
+    - draft
+    requirements: []
+    permissions:
+      repository: read
+      artifacts: draft
+      public_publish: false
