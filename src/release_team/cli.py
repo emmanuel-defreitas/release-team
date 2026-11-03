@@ -9,6 +9,7 @@ from pydantic import TypeAdapter, ValidationError
 
 from .contracts import Approval, Contract, Result, Status, Task
 from .engine import Engine, plan
+from .report import render_markdown
 from .runtime import OfflineRuntime, OpenAIRuntime, Runtime
 from .specs import AgentSpec, Registry, SkillSpec, load_registry
 
@@ -32,6 +33,13 @@ def main(argv: list[str] | None = None) -> int:
     schema.add_argument("kind", choices=SCHEMAS)
     planning = sub.add_parser("plan")
     planning.add_argument("objective")
+    planning.add_argument(
+        "--evidence", action="append", default=[], help="evidence for every step (repeatable)"
+    )
+    report = sub.add_parser("report", help="render workflow results as Markdown")
+    report.add_argument("file", type=Path)
+    report.add_argument("--request", default="", help="the request shown above the drafts")
+    report.add_argument("--footer", default="", help="a closing line, such as a run link")
     for name in ("run", "workflow"):
         run = sub.add_parser(name)
         run.add_argument("file", type=Path)
@@ -54,7 +62,12 @@ def main(argv: list[str] | None = None) -> int:
             )
             return 0
         if args.command == "plan":
-            print(TypeAdapter(list[Task]).dump_json(plan(args.objective), indent=2).decode())
+            tasks = plan(args.objective, args.evidence)
+            print(TypeAdapter(list[Task]).dump_json(tasks, indent=2).decode())
+            return 0
+        if args.command == "report":
+            results = TypeAdapter(list[Result]).validate_json(args.file.read_text())
+            print(render_markdown(results, args.request, args.footer), end="")
             return 0
         runtime: Runtime = (
             OpenAIRuntime(args.model) if args.runtime == "openai" else OfflineRuntime()
