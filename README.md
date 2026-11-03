@@ -253,6 +253,11 @@ Read the draft before using it. This option still cannot publish or change your 
 You can also run the five helpers on GitHub, without installing anything, and get
 their drafts as a comment on a pull request (PR).
 
+Prerequisite: the repository must contain `.github/workflows/release-team.yml` and
+`scripts/release-team-comment.sh`. In a generated repository, copy both from
+`.github/skills/release-team-actions/assets/` as documented in that skill before
+using the button.
+
 ### 1. Press the button
 
 1. Open the repository on GitHub and select the **Actions** tab.
@@ -280,10 +285,6 @@ After a minute or two, the drafts appear in two places:
 If a helper fails, the comment still appears and shows the error, and the run is marked red.
 The workflow only reads the repository and writes that comment. It never releases,
 tags, pushes, or publishes anything.
-
-For a local smoke test, run `make release-team-drafts OBJECTIVE="Draft notes"`. It uses
-offline mode unless the OpenAI settings are present and writes its results to the ignored
-`release-team-out/` directory.
 
 ### 3. Optional: use OpenAI on GitHub
 

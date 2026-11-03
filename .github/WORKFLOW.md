@@ -147,8 +147,8 @@ five agents, adds the PR's title, description, commit headlines and changed file
 - **Drafts only:** it never releases, tags, pushes or publishes, and it does not touch the disabled jobs
   in `release.yml`, `publish.yml` or `next.yml`.
 - The Run workflow button appears only once the file is on the default branch (`main`).
-- For a local smoke test, `make release-team-drafts OBJECTIVE="..."` uses the same offline/OpenAI runtime
-  selection and writes drafts to the ignored `release-team-out/` directory.
+- The workflow and renderer must first be installed at `.github/workflows/release-team.yml` and
+  `scripts/release-team-comment.sh`; generated repositories can copy them from the skill assets.
 
 ## 5. Troubleshooting
 
