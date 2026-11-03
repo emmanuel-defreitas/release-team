@@ -259,5 +259,7 @@ agents-link: ## Symlink .claude/skills and .agents/skills to .github/skills (loc
 OBJECTIVE      ?= Prepare the next release
 
 .PHONY: release-team-drafts
+release-team-drafts: export OBJECTIVE := $(OBJECTIVE)
+release-team-drafts: export REQUESTED_RUNTIME := $(REQUESTED_RUNTIME)
 release-team-drafts: ## Run the agents as release-team.yml does (OBJECTIVE=..., REQUESTED_RUNTIME=auto|offline|openai).
-	@OBJECTIVE="$(OBJECTIVE)" $(SCRIPTS)/release-team-ci.sh run
+	@$(SCRIPTS)/release-team-ci.sh run

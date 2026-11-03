@@ -65,6 +65,8 @@ Targets detect the stack from `pyproject.toml`, `package.json`, `Cargo.toml` or 
   `feat` minor, else patch). Do not edit versions, tags or `CHANGELOG.md` by hand.
 - **Workflows:** `.github/workflows/*.yml` are plain workflows; steps call `make` targets. Pin third-party
   actions to a commit SHA with a version comment. Keep jobs least-privilege.
+- **Release Team runner:** `make release-team-drafts OBJECTIVE="..."` runs draft-only agents locally;
+  it uses offline mode unless OpenAI settings are explicitly present and writes only ignored output.
 - **Docs move with automation:** update `AGENTS.md`, `README.md`, and `.github/WORKFLOW.md` in the same PR.
 - **Template stays generic:** stack specifics go behind `scripts/stack.sh` or `.github/skills/`.
 - **Skills:** `.github/skills/<name>/SKILL.md`, frontmatter `name` equal to the directory and a one-line

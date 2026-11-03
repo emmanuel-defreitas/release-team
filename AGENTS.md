@@ -70,6 +70,7 @@ With no stack detected every task is a clean no-op.
 | Validate skills and agent instruction files | `make agents-check`                         |
 | Scan for secrets                            | `make secrets-scan`                         |
 | Release artifacts                           | `make pack`                                 |
+| Run Release Team drafts                     | `make release-team-drafts OBJECTIVE="..."` |
 
 Override any task for any stack with `<TASK>_CMD` (`make test TEST_CMD="pytest -x"`); force the stack list
 with `STACKS="python node"`. Monorepos: only root manifests are detected, so set the overrides.
@@ -124,7 +125,7 @@ If this file and the automation disagree, `.github/BRANCH-AND-RELEASE-POLICY.md`
 | Path                                                                | What it is                                                                                           |
 | ------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
 | `makefile`                                                          | The one entry point: every dev and CI step is a target                                               |
-| `scripts/`                                                          | `stack.sh` runner, `version.sh`, `semver.sh`, `release.sh`, `secrets.sh`, ...                        |
+| `scripts/`                                                          | `stack.sh` runner, `version.sh`, `semver.sh`, `release.sh`, `secrets.sh`, `release-team-ci.sh`, ...   |
 | `tests/template/`                                                   | Tests for those scripts (`make selftest`)                                                            |
 | `.github/workflows/`                                                | `pr`, `secret-scan`, `security`, `promote`, `next`, `pr-merged`, `release`, `publish`, `matrix`, ... |
 | `.github/actions/setup/`                                            | Composite action: detect stacks, install only their toolchains                                       |
