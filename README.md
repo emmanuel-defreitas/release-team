@@ -11,7 +11,8 @@ This is an early version. It creates drafts and plans. It does not edit your
 project, take screenshots, or post announcements. Package publishing is manual and disabled until the first upload is approved.
 
 [Setup](#set-up-your-computer) · [Free demo](#run-the-free-demo) ·
-[Workflow](#try-a-five-step-workflow) · [OpenAI](#optional-use-openai) · [Help](#get-help)
+[Workflow](#try-a-five-step-workflow) · [OpenAI](#optional-use-openai) ·
+[GitHub](#run-the-team-on-github) · [Help](#get-help)
 
 ## Public distribution
 
@@ -246,6 +247,60 @@ alone does not load them for this command.
 
 A successful result has `"status": "completed"` and `"runtime": "openai"`.
 Read the draft before using it. This option still cannot publish or change your project.
+
+## Run the team on GitHub
+
+You can also run the five helpers on GitHub, without installing anything, and get
+their drafts as a comment on a pull request (PR).
+
+Prerequisite: the repository must contain `.github/workflows/release-team.yml` and
+`scripts/release-team-comment.sh`. In a generated repository, copy both from
+`.github/skills/release-team-actions/assets/` as documented in that skill before
+using the button.
+
+### 1. Press the button
+
+1. Open the repository on GitHub and select the **Actions** tab.
+2. Select **Release Team** in the list on the left.
+3. Select **Run workflow**, fill in the boxes below, and press the green **Run workflow** button.
+
+| Box | What to enter |
+|---|---|
+| **objective** | What the team should prepare, for example `Draft notes for v0.2.0`. |
+| **pr_number** | The number of the PR to read and comment on, for example `42`. Leave it blank to see the drafts only on the run's page. |
+| **runtime** | Leave it on `auto`. `offline` always gives free placeholder drafts. `openai` uses OpenAI and fails if it is not set up. |
+
+The button appears only once `.github/workflows/release-team.yml` is on the
+default branch (`main`). Until then the **Release Team** entry is missing.
+
+### 2. Read the drafts
+
+After a minute or two, the drafts appear in two places:
+
+- **On the PR:** one comment titled "Release Team drafts", with a table of the five
+  helpers and a section you can expand for each draft. Running it again updates
+  the same comment instead of adding a new one.
+- **On the run's page:** under **Summary**, even when you left the PR number blank.
+
+If a helper fails, the comment still appears and shows the error, and the run is marked red.
+The workflow only reads the repository and writes that comment. It never releases,
+tags, pushes, or publishes anything.
+
+### 3. Optional: use OpenAI on GitHub
+
+On `auto`, the workflow gives free offline placeholder drafts until a repository
+owner adds both settings below. Run these yourself in Terminal, inside the
+`release-team` folder. The first command asks you to paste the key, so it never
+appears on screen or in your command history.
+
+```sh
+gh secret set OPENAI_API_KEY
+gh variable set OPENAI_MODEL --body "REPLACE_ME"
+```
+
+Replace `REPLACE_ME` with a model ID your account can use. After that, each run on
+`auto` sends the objective and the PR's title, description, commit titles, and
+changed file names to OpenAI. API calls can cost money.
 
 ## Check your work
 
