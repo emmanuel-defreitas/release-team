@@ -27,8 +27,8 @@ cross-platform file-permission assertion. No product package or new feature is
 merged into `dev` by this repair. The scaffold and beginner README stay in PR #3.
 
 Release, Publish, release-tag and automatic promotion workflows are disabled in
-GitHub settings. Repositories remain private. Do not publish releases or public
-announcements without explicit approval.
+GitHub settings. The repository is public for skills.sh distribution, but releases,
+tags, deployments, previews, and public announcements still require explicit approval.
 
 ## Remaining lane
 
