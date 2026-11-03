@@ -13,6 +13,14 @@ project, take screenshots, or post announcements. Package publishing is manual a
 [Setup](#set-up-your-computer) · [Free demo](#run-the-free-demo) ·
 [Workflow](#try-a-five-step-workflow) · [OpenAI](#optional-use-openai) · [Help](#get-help)
 
+## Public distribution
+
+This repository is public so reviewed Agent Skills can be distributed through
+[skills.sh](https://skills.sh/). The package workflow only builds and checks by
+default. PyPI uploads, GitHub releases and tags, deployments, previews, and
+announcements remain manual and require explicit approval. See [Publishing](docs/publishing.md)
+for the maintainer workflow.
+
 ## Install from PyPI (after the first release)
 
 The workflow is ready for review. This change does **not** publish a package.
