@@ -53,8 +53,16 @@ def test_report_stays_under_the_github_comment_limit() -> None:
         r.artifacts = [Artifact(name="huge.md", content="x" * 30_000)]
     body = render_markdown(results, footer="Run link")
     assert len(body) <= MAX_CHARS
-    assert "omitted because the comment is too long" in body
+    assert body.count("… [truncated]") == 5
     assert body.rstrip().endswith("Run link")
+
+
+def test_report_limits_large_header_components() -> None:
+    result = offline_results()[0]
+    result.summary = "s" * 70_000
+    body = render_markdown([result], request="r" * 70_000, footer="f" * 70_000)
+    assert len(body) <= MAX_CHARS
+    assert "… [truncated]" in body or "Additional draft content omitted" in body
 
 
 def test_plan_passes_evidence_to_every_step() -> None:
