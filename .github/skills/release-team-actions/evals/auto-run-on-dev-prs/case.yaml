@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: auto-run-on-dev-prs
+expected_outcome: |
+  The workflow triggers on pull_request (not pull_request_target) for dev, guards fork PRs that lack secrets and write tokens, posts or updates one comment per PR with a least-privilege write job, avoids script injection from PR text, and warns about cost when OpenAI is enabled.
