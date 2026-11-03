@@ -1,0 +1,19 @@
+apiVersion: release-team.dev/v1alpha1
+kind: Skill
+metadata:
+  id: screenshot-capture
+  name: Screenshot Capture
+  version: 0.1.0
+spec:
+  description: Capture approved UI scenarios and verify resulting images.
+  adapter: screenshot-capture
+  implementation_status: planned
+  capabilities:
+  - capture
+  - validate
+  requirements:
+  - host adapter
+  permissions:
+    repository: read
+    artifacts: draft
+    public_publish: false

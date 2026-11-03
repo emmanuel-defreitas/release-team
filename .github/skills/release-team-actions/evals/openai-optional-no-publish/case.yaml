@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: openai-optional-no-publish
+expected_outcome: |
+  The workflow runs offline when the OPENAI_API_KEY secret or OPENAI_MODEL variable is missing and switches to OpenAI when both exist, keeps the key in a read-only job, leaves release/publish/next guards untouched, and tells the user how to add the secret themselves.

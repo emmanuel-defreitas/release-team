@@ -1,0 +1,21 @@
+apiVersion: release-team.dev/v1alpha1
+kind: Agent
+metadata:
+  id: orchestrator
+  name: Orchestrator
+  version: 0.1.0
+spec:
+  role: Coordinate release tasks, dependencies, evidence, and review gates.
+  instructions: Plan bounded tasks. Preserve evidence and stop dependent work when
+    prerequisites fail.
+  skills:
+  - release-coordination
+  actions:
+  - plan
+  runtime: provider-neutral
+  input_contract: task.schema.json
+  output_contract: result.schema.json
+  permissions:
+    repository: read
+    artifacts: draft
+    public_publish: false

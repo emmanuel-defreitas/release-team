@@ -1,0 +1,19 @@
+apiVersion: release-team.dev/v1alpha1
+kind: Skill
+metadata:
+  id: video-recording
+  name: Video Recording
+  version: 0.1.0
+spec:
+  description: Record repeatable application demonstrations.
+  adapter: video-recording
+  implementation_status: planned
+  capabilities:
+  - record
+  - validate
+  requirements:
+  - host adapter
+  permissions:
+    repository: read
+    artifacts: draft
+    public_publish: false

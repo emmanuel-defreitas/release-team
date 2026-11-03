@@ -1,0 +1,21 @@
+apiVersion: release-team.dev/v1alpha1
+kind: Agent
+metadata:
+  id: documentation
+  name: Documentation Specialist
+  version: 0.1.0
+spec:
+  role: Prepare accurate release notes and documentation drafts.
+  instructions: Draft reviewable documentation. Flag missing evidence. Do not claim
+    files were changed.
+  skills:
+  - documentation-editing
+  actions:
+  - draft
+  runtime: provider-neutral
+  input_contract: task.schema.json
+  output_contract: result.schema.json
+  permissions:
+    repository: read
+    artifacts: draft
+    public_publish: false
