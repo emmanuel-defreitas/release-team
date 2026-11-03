@@ -65,6 +65,8 @@ Targets detect the stack from `pyproject.toml`, `package.json`, `Cargo.toml` or 
   `feat` minor, else patch). Do not edit versions, tags or `CHANGELOG.md` by hand.
 - **Workflows:** `.github/workflows/*.yml` are plain workflows; steps call `make` targets. Pin third-party
   actions to a commit SHA with a version comment. Keep jobs least-privilege.
+  `release-team.yml` is a manual button that runs the agents and posts drafts as a PR comment; it never
+  publishes, and only its `comment` job (which has no OpenAI key) may write to PRs.
 - **Release Team runner:** `make release-team-drafts OBJECTIVE="..."` runs draft-only agents locally;
   it uses offline mode unless OpenAI settings are explicitly present and writes only ignored output.
 - **Docs move with automation:** update `AGENTS.md`, `README.md`, and `.github/WORKFLOW.md` in the same PR.

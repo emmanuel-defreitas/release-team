@@ -125,9 +125,9 @@ If this file and the automation disagree, `.github/BRANCH-AND-RELEASE-POLICY.md`
 | Path                                                                | What it is                                                                                           |
 | ------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
 | `makefile`                                                          | The one entry point: every dev and CI step is a target                                               |
-| `scripts/`                                                          | `stack.sh` runner, `version.sh`, `semver.sh`, `release.sh`, `secrets.sh`, `release-team-ci.sh`, ...   |
+| `scripts/`                                                          | `stack.sh` runner, `version.sh`, `semver.sh`, `release.sh`, `secrets.sh`, `release-team-ci.sh`, `release-team-comment.sh`, ... |
 | `tests/template/`                                                   | Tests for those scripts (`make selftest`)                                                            |
-| `.github/workflows/`                                                | `pr`, `secret-scan`, `security`, `promote`, `next`, `pr-merged`, `release`, `publish`, `matrix`, ... |
+| `.github/workflows/`                                                | `pr`, `secret-scan`, `security`, `promote`, `next`, `pr-merged`, `release`, `publish`, `matrix`, `release-team` (manual agent drafts as a PR comment), ... |
 | `.github/actions/setup/`                                            | Composite action: detect stacks, install only their toolchains                                       |
 | `.github/rulesets/`, `settings.yml`                                 | Branch/tag protection and repo settings as code                                                      |
 | `.github/skills/`                                                   | Agent skills (single source of truth)                                                                |

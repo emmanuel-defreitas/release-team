@@ -95,8 +95,11 @@ class Engine:
         return results
 
 
-def plan(objective: str) -> list[Task]:
-    root = Task(agent="orchestrator", action=Action.PLAN, objective=objective)
+def plan(objective: str, evidence: Sequence[str] = ()) -> list[Task]:
+    """Five-step draft workflow; every step sees the same supplied evidence."""
+    root = Task(
+        agent="orchestrator", action=Action.PLAN, objective=objective, evidence=list(evidence)
+    )
     tasks = [root]
     for agent, action in [
         ("release-analyst", Action.ANALYZE),
@@ -111,6 +114,7 @@ def plan(objective: str) -> list[Task]:
                 agent=agent,
                 action=action,
                 objective=objective,
+                evidence=list(evidence),
                 dependencies=[tasks[-1].task_id],
             )
         )
