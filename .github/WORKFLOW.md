@@ -77,6 +77,7 @@ Secrets (repository level unless an environment is named):
 | `CARGO_REGISTRY_TOKEN` (env `crates`)             | `PUBLISH_CRATES`                                    |
 | `EXPO_TOKEN` (env `eas`)                          | `EAS_BUILD_PROFILE`                                 |
 | provider tokens (env `preview` / `production`)    | `PREVIEW_DEPLOY_COMMAND` / `DEPLOY_COMMAND`         |
+| `OPENAI_API_KEY`                                  | Optional. `release-team.yml` with OpenAI drafts     |
 
 PyPI uses trusted publishing (OIDC): register the repo and the `pypi` environment on pypi.org, no secret.
 
@@ -96,6 +97,7 @@ Variables:
 | `EAS_BUILD_PROFILE`                                        | Queues an EAS build for that profile                                     |
 | `PREVIEW_DEPLOY_COMMAND`, `DEPLOY_COMMAND`                 | Shell run after `next` pushes / production tags                          |
 | `DEPENDENCY_REVIEW`, `CODEQL`                              | `false` switches that security job off                                   |
+| `OPENAI_MODEL`                                             | With `OPENAI_API_KEY`, `release-team.yml` uses OpenAI on `auto`          |
 
 Locally: `make env-init` creates `.env` (mode 600) from `.env.example`; `make env-check` diffs keys;
 `make secrets-push [ENV_FILE=.env.ci] [ENVIRONMENT=npm]` and `make secrets-vars-push` load dotenv files into
@@ -127,6 +129,26 @@ make cleanup-local              # prune local branches whose remote is gone
 
 `make tag-release` is idempotent: an existing tag is skipped. Everything is parameterized on `TRUNK`
 (default `main`).
+
+### Release Team drafts (`release-team.yml`)
+
+A manual `workflow_dispatch` run (Actions > Release Team > Run workflow, or
+`gh workflow run release-team.yml -f objective="Draft notes for v0.2.0" -f pr_number=42`). It plans the
+five agents, adds the PR's title, description, commit headlines and changed files as evidence, runs
+`release-team workflow`, and renders the results with `scripts/release-team-comment.sh`.
+
+- **Inputs:** `objective` (required), `pr_number` (blank = run summary only), `runtime`
+  (`auto` | `offline` | `openai`). `auto` uses OpenAI only when the `OPENAI_API_KEY` secret and the
+  `OPENAI_MODEL` variable both exist, otherwise offline placeholder drafts.
+- **Jobs:** `draft` (`contents: read`, `pull-requests: read`; the only job that sees the OpenAI key)
+  uploads `comment.md` and `results.json` as a 7-day run artifact. `comment` (`pull-requests: write`, no
+  key) creates or updates one PR comment marked `<!-- release-team-drafts -->`. It runs even when a task
+  failed; `draft` then fails last so the run is red.
+- **Drafts only:** it never releases, tags, pushes or publishes, and it does not touch the disabled jobs
+  in `release.yml`, `publish.yml` or `next.yml`.
+- The Run workflow button appears only once the file is on the default branch (`main`).
+- The workflow and renderer must first be installed at `.github/workflows/release-team.yml` and
+  `scripts/release-team-comment.sh`; generated repositories can copy them from the skill assets.
 
 ## 5. Troubleshooting
 
