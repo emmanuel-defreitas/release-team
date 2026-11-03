@@ -1,0 +1,165 @@
+name: Release Team
+
+# Runs the five Release Team agents on demand and shares their drafts.
+# Drafts only: nothing is published, released, tagged or pushed.
+# Offline (free placeholder drafts) unless the OPENAI_API_KEY secret and the
+# OPENAI_MODEL variable are both set. With OpenAI, the objective and PR evidence
+# (title, description, commit headlines, changed file names) are sent to OpenAI.
+
+on:
+  workflow_dispatch:
+    inputs:
+      objective:
+        description: What the team should prepare, for example "Draft notes for v0.2.0"
+        required: true
+        type: string
+      pr_number:
+        description: PR to read and comment on (leave blank for the run summary only)
+        required: false
+        type: string
+      runtime:
+        description: auto uses OpenAI only when its secret and model are set
+        type: choice
+        options: [auto, offline, openai]
+        default: auto
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-team-${{ inputs.pr_number || github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  draft:
+    name: draft
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: ./.github/actions/setup
+        with:
+          install: "false"
+
+      - name: Pick the runtime
+        id: runtime
+        env:
+          REQUESTED: ${{ inputs.runtime }}
+          HAS_KEY: ${{ secrets.OPENAI_API_KEY != '' }}
+          OPENAI_MODEL: ${{ vars.OPENAI_MODEL }}
+        run: |
+          ready=false
+          if [ "$HAS_KEY" = true ] && [ -n "$OPENAI_MODEL" ]; then ready=true; fi
+          case "$REQUESTED" in
+            offline) runtime=offline ;;
+            openai)
+              [ "$ready" = true ] || {
+                echo "::error::runtime=openai needs the OPENAI_API_KEY secret and the OPENAI_MODEL variable"
+                exit 1
+              }
+              runtime=openai ;;
+            *) if [ "$ready" = true ]; then runtime=openai; else runtime=offline; fi ;;
+          esac
+          echo "runtime=$runtime" >> "$GITHUB_OUTPUT"
+          echo "Runtime: $runtime"
+
+      - name: Install the team
+        env:
+          RUNTIME: ${{ steps.runtime.outputs.runtime }}
+        run: |
+          if [ "$RUNTIME" = openai ]; then uv sync --locked --extra openai; else uv sync --locked; fi
+          uv run --locked release-team validate
+
+      - name: Collect PR evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          PR: ${{ inputs.pr_number }}
+        run: |
+          if [ -z "$PR" ]; then echo '[]' > evidence.json; exit 0; fi
+          [[ "$PR" =~ ^[1-9][0-9]*$ ]] || { echo "::error::pr_number must be a number"; exit 1; }
+          gh pr view "$PR" --json number,title,body,baseRefName,headRefName,commits,files |
+            jq '[
+              "PR #\(.number): \(.title) (\(.headRefName) -> \(.baseRefName))",
+              ("Description: " + ((.body // "") | .[0:2000])),
+              (.commits[:100][] | "Commit \(.oid[0:7]): \(.messageHeadline)"),
+              ("Changed files (\(.files | length)): "
+                + ([.files[:100][] | "\(.path) +\(.additions)/-\(.deletions)"] | join(", ")))
+            ]' > evidence.json
+
+      - name: Run the team
+        id: team
+        env:
+          OBJECTIVE: ${{ inputs.objective }}
+          RUNTIME: ${{ steps.runtime.outputs.runtime }}
+          OPENAI_API_KEY: ${{ steps.runtime.outputs.runtime == 'openai' && secrets.OPENAI_API_KEY || '' }}
+          OPENAI_MODEL: ${{ vars.OPENAI_MODEL }}
+        run: |
+          uv run --locked release-team plan "$OBJECTIVE" |
+            jq --slurpfile ev evidence.json 'map(.evidence = $ev[0])' > workflow.json
+          set +e
+          uv run --locked release-team workflow workflow.json --runtime "$RUNTIME" > results.json
+          code=$?
+          set -e
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+
+      - name: Render the drafts
+        env:
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          bash scripts/release-team-comment.sh results.json "$RUN_URL" > comment.md
+          cat comment.md >> "$GITHUB_STEP_SUMMARY"
+
+      # A private run file for the comment job, not a release or package.
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: release-team-drafts
+          path: |
+            comment.md
+            results.json
+          retention-days: 7
+
+      - name: Fail if a task did not complete
+        if: steps.team.outputs.exit_code != '0'
+        env:
+          CODE: ${{ steps.team.outputs.exit_code }}
+        run: |
+          echo "::error::release-team exited $CODE; see the drafts summary for each task's status"
+          exit 1
+
+  comment:
+    name: comment
+    needs: draft
+    # Still comment when a task failed, so the PR shows what went wrong.
+    if: ${{ !cancelled() && inputs.pr_number != '' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      pull-requests: write
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
+        with:
+          name: release-team-drafts
+
+      - name: Post or update the drafts comment
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          PR: ${{ inputs.pr_number }}
+        run: |
+          [[ "$PR" =~ ^[1-9][0-9]*$ ]] || { echo "::error::pr_number must be a number"; exit 1; }
+          id="$(gh api --paginate --slurp "repos/$GH_REPO/issues/$PR/comments" | jq -r '
+            [.[][] | select(.user.login == "github-actions[bot]"
+              and (.body | startswith("<!-- release-team-drafts -->")))] | last | .id // empty')"
+          if [ -n "$id" ]; then
+            gh api -X PATCH "repos/$GH_REPO/issues/comments/$id" -F body=@comment.md > /dev/null
+            echo "Updated comment $id on #$PR"
+          else
+            gh pr comment "$PR" --body-file comment.md
+          fi
