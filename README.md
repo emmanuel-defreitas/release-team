@@ -12,7 +12,7 @@ project, take screenshots, or post announcements. Package publishing is manual a
 
 [Setup](#set-up-your-computer) · [Free demo](#run-the-free-demo) ·
 [Workflow](#try-a-five-step-workflow) · [OpenAI](#optional-use-openai) ·
-[GitHub](#run-the-team-on-github) · [Help](#get-help)
+[GitHub](#run-the-team-on-github) · [Codex plugin](#codex-plugin) · [Help](#get-help)
 
 ## Public distribution
 
@@ -21,6 +21,23 @@ This repository is public so reviewed Agent Skills can be distributed through
 default. PyPI uploads, GitHub releases and tags, deployments, previews, and
 announcements remain manual and require explicit approval. See [Publishing](docs/publishing.md)
 for the maintainer workflow.
+
+## Codex plugin
+
+The repository also contains a skills-only Codex plugin at
+[`plugins/release-team-actions/`](plugins/release-team-actions/). It bundles the
+Release Team Actions skill, the reviewed workflow template, and the mention-safe
+comment renderer. It does not include an MCP server, credentials, or the
+`release-team` Python package.
+
+Before installing the bundled workflow in another repository, verify that the
+target provides Python 3.11+, `uv`, `jq`, `gh`, and `bash`; a locked `uv.lock`
+that makes `uv run --locked release-team` available; and a compatible
+`.github/actions/setup` action. That action may depend on the target repository's
+`scripts/stack.sh` and `scripts/lib.sh`. Copying only the workflow and comment
+script is not sufficient when those prerequisites are absent. See the plugin's
+[`SKILL.md`](plugins/release-team-actions/skills/release-team-actions/SKILL.md)
+for the complete installation checklist.
 
 ## Install from PyPI (after the first release)
 

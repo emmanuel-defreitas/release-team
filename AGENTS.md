@@ -131,6 +131,7 @@ If this file and the automation disagree, `.github/BRANCH-AND-RELEASE-POLICY.md`
 | `.github/actions/setup/`                                            | Composite action: detect stacks, install only their toolchains                                       |
 | `.github/rulesets/`, `settings.yml`                                 | Branch/tag protection and repo settings as code                                                      |
 | `.github/skills/`                                                   | Agent skills (single source of truth)                                                                |
+| `plugins/release-team-actions/`                                     | Portable Codex skills-only plugin with the Release Team workflow assets                            |
 | `.github/ISSUE_TEMPLATE/`, `PULL_REQUEST_TEMPLATE.md`, `CODEOWNERS` | Collaboration templates                                                                              |
 | `.devcontainer/`                                                    | Codespaces / dev container                                                                           |
 
@@ -148,6 +149,7 @@ If this file and the automation disagree, `.github/BRANCH-AND-RELEASE-POLICY.md`
 | `stack-rust-gpui`                                | Rust and GPUI work                                          |
 | `stack-swiftui`                                  | SwiftUI / Xcode work                                        |
 | `agents-building`                                | Building agents: prompts, tools, skills, MCP, evals         |
+| `plugins/release-team-actions/`                   | Using the packaged Release Team Actions skill in Codex      |
 | `agentic-workflows`, `agentic-workflow-designer` | Only if you adopt GitHub Agentic Workflows (`gh aw`)        |
 
 `make agents-link` symlinks `.claude/skills` and `.agents/skills` to this directory; `make agents-check`

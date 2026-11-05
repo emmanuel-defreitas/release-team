@@ -12,6 +12,25 @@ The team only writes drafts. The workflow you add must keep it that way: it read
 runs the agents and posts a comment. It never releases, tags, pushes or publishes anything,
 and it does not touch the disabled jobs in `release.yml`, `publish.yml` or `next.yml`.
 
+## Target repository prerequisites
+
+This is a skills-only plugin. It bundles the reviewed workflow and comment renderer, not the
+`release-team` Python package or a complete repository toolchain. The bundled workflow is not a
+drop-in standalone workflow for every repository. Before installing it, verify that the target
+repository provides:
+
+- Python 3.11 or newer, `uv`, `jq`, `gh`, and `bash` on its GitHub runner.
+- A `pyproject.toml` and locked `uv.lock` that make the `release-team` CLI available to
+  `uv run --locked release-team` (including the `openai` extra if OpenAI runtime is enabled).
+- A compatible `.github/actions/setup` composite action. This template calls it with
+  `install: "false"`; that action may depend on the target repository's `scripts/stack.sh` and
+  `scripts/lib.sh`. If the target does not have that setup action, adapt the setup step to the
+  target repository's own toolchain setup before using the workflow.
+- The copied `scripts/release-team-comment.sh` with its executable bit preserved.
+
+If any prerequisite is absent, stop and adapt the workflow or install the package first. Do not
+tell a user that copying only the two bundled files produces a runnable workflow.
+
 ## What to build
 
 Start from the reviewed templates bundled with this plugin instead of writing a workflow from

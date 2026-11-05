@@ -69,6 +69,9 @@ Targets detect the stack from `pyproject.toml`, `package.json`, `Cargo.toml` or 
   publishes, and only its `comment` job (which has no OpenAI key) may write to PRs.
 - **Release Team runner:** `make release-team-drafts OBJECTIVE="..."` runs draft-only agents locally;
   it uses offline mode unless OpenAI settings are explicitly present and writes only ignored output.
+- **Codex plugin:** `plugins/release-team-actions/` is a skills-only package containing the Release
+  Team workflow template and comment renderer. It does not bundle the Python package or a complete
+  target-repository toolchain; follow its `SKILL.md` prerequisites before copying the assets.
 - **Docs move with automation:** update `AGENTS.md`, `README.md`, and `.github/WORKFLOW.md` in the same PR.
 - **Template stays generic:** stack specifics go behind `scripts/stack.sh` or `.github/skills/`.
 - **Skills:** `.github/skills/<name>/SKILL.md`, frontmatter `name` equal to the directory and a one-line

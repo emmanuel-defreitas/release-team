@@ -154,6 +154,9 @@ five agents, adds the PR's title, description, commit headlines and changed file
 - The Run workflow button appears only once the file is on the default branch (`main`).
 - The workflow and renderer must first be installed at `.github/workflows/release-team.yml` and
   `scripts/release-team-comment.sh`; generated repositories can copy them from the skill assets.
+- The Codex package at `plugins/release-team-actions/` is skills-only. It does not bundle the
+  `release-team` Python package or the target repository's `.github/actions/setup`, `scripts/stack.sh`,
+  or `scripts/lib.sh`; verify those prerequisites before copying the two assets into another repo.
 
 ## 5. Troubleshooting
 

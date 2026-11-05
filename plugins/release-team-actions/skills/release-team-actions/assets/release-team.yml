@@ -5,6 +5,10 @@ name: Release Team
 # Offline (free placeholder drafts) unless the OPENAI_API_KEY secret and the
 # OPENAI_MODEL variable are both set. With OpenAI, the objective and PR evidence
 # (title, description, commit headlines, changed file names) are sent to OpenAI.
+#
+# Prerequisites: the target repository must provide a locked release-team CLI,
+# a compatible .github/actions/setup action, and its setup dependencies. See
+# the release-team-actions skill before copying this template.
 
 on:
   workflow_dispatch:
