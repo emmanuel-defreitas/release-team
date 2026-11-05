@@ -65,6 +65,13 @@ Targets detect the stack from `pyproject.toml`, `package.json`, `Cargo.toml` or 
   `feat` minor, else patch). Do not edit versions, tags or `CHANGELOG.md` by hand.
 - **Workflows:** `.github/workflows/*.yml` are plain workflows; steps call `make` targets. Pin third-party
   actions to a commit SHA with a version comment. Keep jobs least-privilege.
+  `release-team.yml` is a manual button that runs the agents and posts drafts as a PR comment; it never
+  publishes, and only its `comment` job (which has no OpenAI key) may write to PRs.
+- **Release Team runner:** `make release-team-drafts OBJECTIVE="..."` runs draft-only agents locally;
+  it uses offline mode unless OpenAI settings are explicitly present and writes only ignored output.
+- **Codex plugin:** `plugins/release-team-actions/` is a skills-only package containing the Release
+  Team workflow template and comment renderer. It does not bundle the Python package or a complete
+  target-repository toolchain; follow its `SKILL.md` prerequisites before copying the assets.
 - **Docs move with automation:** update `AGENTS.md`, `README.md`, and `.github/WORKFLOW.md` in the same PR.
 - **Template stays generic:** stack specifics go behind `scripts/stack.sh` or `.github/skills/`.
 - **Skills:** `.github/skills/<name>/SKILL.md`, frontmatter `name` equal to the directory and a one-line

@@ -1,0 +1,26 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "release-team-actions",
+  "version": "0.1.0",
+  "description": "Secure, draft-only Release Team workflows for GitHub Actions.",
+  "author": {
+    "name": "Emmanuel De Freitas"
+  },
+  "homepage": "https://github.com/emmanuel-defreitas/release-team",
+  "repository": "https://github.com/emmanuel-defreitas/release-team",
+  "license": "MIT",
+  "keywords": ["github-actions", "release-notes", "drafts", "automation"],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Release Team Actions",
+        "shortDescription": "GitHub Release Team workflows",
+        "longDescription": "Add and maintain a secure, manual GitHub Actions workflow that runs the five-agent Release Team offline or with explicit OpenAI opt-in, then posts draft output without releasing, tagging, pushing, or publishing.",
+        "developerName": "Emmanuel De Freitas",
+        "category": "Productivity",
+        "capabilities": [],
+        "defaultPrompt": "Help me add or review the Release Team GitHub Actions workflow safely."
+      }
+    }
+  }
+}
