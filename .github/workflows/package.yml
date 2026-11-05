@@ -1,0 +1,80 @@
+name: Package
+
+on:
+  pull_request:
+  push:
+    branches: [main, dev]
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: Upload to pypi (requires owner approval and repository opt-in)
+        type: boolean
+        default: false
+      version:
+        description: Exact version already committed on main (required for publication)
+        type: string
+        default: ""
+
+permissions:
+  contents: read
+
+concurrency:
+  group: package-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+        with:
+          install: "false"
+      - name: Check publication version
+        if: github.event_name == 'workflow_dispatch' && inputs.publish
+        env:
+          PACKAGE_VERSION: ${{ inputs.version }}
+        run: bash scripts/check-package-version.sh
+      - run: make ci
+      - name: Build source archive and wheel
+        run: uv build --out-dir dist
+      - name: Validate package metadata and README
+        run: uvx --from twine==7.0.0 twine check --strict dist/*
+      - name: Test the installed wheel outside the source tree
+        run: |
+          uv venv --python 3.11 "$RUNNER_TEMP/package-smoke"
+          uv pip install --python "$RUNNER_TEMP/package-smoke/bin/python" dist/*.whl
+          cd "$RUNNER_TEMP"
+          "$RUNNER_TEMP/package-smoke/bin/release-team" validate
+          "$RUNNER_TEMP/package-smoke/bin/python" -c 'from release_team.contracts import Task, Result; from release_team.engine import Engine'
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: package
+          path: dist/*
+          if-no-files-found: error
+          retention-days: 7
+
+  publish:
+    # Unset/false repository variable keeps public uploads disabled.
+    if: >-
+      github.event_name == 'workflow_dispatch' && inputs.publish &&
+      github.ref == 'refs/heads/main' && vars.PUBLISH_PYPI == 'true'
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: pypi
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
+        with:
+          name: package
+          path: dist
+      - name: Upload the checked distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086 # release/v1
+        with:
+          packages-dir: dist/

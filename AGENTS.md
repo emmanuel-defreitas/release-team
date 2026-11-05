@@ -1,13 +1,28 @@
 # Agent operating guide
 
+## Package publishing (current policy)
+
+The reviewed package workflow is `.github/workflows/package.yml`. PRs and pushes
+build and check packages without publishing them. Publication is manual-only,
+from `main`, with `publish=true`, an exact non-placeholder version, and repository
+variable `PUBLISH_PYPI=true`. Leave that variable unset or false until the owner
+explicitly approves a public package upload. Never dispatch publication on the
+owner's behalf without that approval.
+
+The repository is public to support distribution of the reviewed agent skills.
+Registry packages are public, including their bundled source files. GitHub Releases,
+tags, previews, promotion and announcements remain disabled. Keep all inherited
+workflows and their false guards disabled; do not use `publish.yml`. See
+`docs/publishing.md` for setup and first-publication steps.
+
 ## Scaffold publication policy (takes precedence over inherited release instructions)
 
-Public releases, package publication, deployments, previews and announcements are
-disabled for this scaffold. The inherited release/publish workflow jobs and the
+Public releases, deployments, previews and announcements are disabled. Package
+publication follows the manual approval policy above. The inherited release/publish workflow jobs and the
 next-lane preview job have unconditional false guards. Tags and repository variables
-are not approval. Do not re-enable these jobs, push local work to a public repository,
-or announce the project without explicit approval. Existing template automation is
-retained for future reviewed adoption; do not run `make tag-release` or bootstrap
+are not approval. Do not re-enable these jobs, create releases or tags, deploy
+previews, or announce the project without explicit approval. Existing template
+automation is retained for future reviewed adoption; do not run `make tag-release` or bootstrap
 remote repository settings as part of local setup.
 
 Feature branches and local checks remain supported. `make ci` verifies the package
@@ -55,6 +70,7 @@ With no stack detected every task is a clean no-op.
 | Validate skills and agent instruction files | `make agents-check`                         |
 | Scan for secrets                            | `make secrets-scan`                         |
 | Release artifacts                           | `make pack`                                 |
+| Run Release Team drafts                     | `make release-team-drafts OBJECTIVE="..."` |
 
 Override any task for any stack with `<TASK>_CMD` (`make test TEST_CMD="pytest -x"`); force the stack list
 with `STACKS="python node"`. Monorepos: only root manifests are detected, so set the overrides.
@@ -109,12 +125,13 @@ If this file and the automation disagree, `.github/BRANCH-AND-RELEASE-POLICY.md`
 | Path                                                                | What it is                                                                                           |
 | ------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
 | `makefile`                                                          | The one entry point: every dev and CI step is a target                                               |
-| `scripts/`                                                          | `stack.sh` runner, `version.sh`, `semver.sh`, `release.sh`, `secrets.sh`, ...                        |
+| `scripts/`                                                          | `stack.sh` runner, `version.sh`, `semver.sh`, `release.sh`, `secrets.sh`, `release-team-ci.sh`, `release-team-comment.sh`, ... |
 | `tests/template/`                                                   | Tests for those scripts (`make selftest`)                                                            |
-| `.github/workflows/`                                                | `pr`, `secret-scan`, `security`, `promote`, `next`, `pr-merged`, `release`, `publish`, `matrix`, ... |
+| `.github/workflows/`                                                | `pr`, `secret-scan`, `security`, `promote`, `next`, `pr-merged`, `release`, `publish`, `matrix`, `release-team` (manual agent drafts as a PR comment), ... |
 | `.github/actions/setup/`                                            | Composite action: detect stacks, install only their toolchains                                       |
 | `.github/rulesets/`, `settings.yml`                                 | Branch/tag protection and repo settings as code                                                      |
 | `.github/skills/`                                                   | Agent skills (single source of truth)                                                                |
+| `plugins/release-team-actions/`                                     | Portable Codex skills-only plugin with the Release Team workflow assets                            |
 | `.github/ISSUE_TEMPLATE/`, `PULL_REQUEST_TEMPLATE.md`, `CODEOWNERS` | Collaboration templates                                                                              |
 | `.devcontainer/`                                                    | Codespaces / dev container                                                                           |
 
@@ -132,6 +149,7 @@ If this file and the automation disagree, `.github/BRANCH-AND-RELEASE-POLICY.md`
 | `stack-rust-gpui`                                | Rust and GPUI work                                          |
 | `stack-swiftui`                                  | SwiftUI / Xcode work                                        |
 | `agents-building`                                | Building agents: prompts, tools, skills, MCP, evals         |
+| `plugins/release-team-actions/`                   | Using the packaged Release Team Actions skill in Codex      |
 | `agentic-workflows`, `agentic-workflow-designer` | Only if you adopt GitHub Agentic Workflows (`gh aw`)        |
 
 `make agents-link` symlinks `.claude/skills` and `.agents/skills` to this directory; `make agents-check`

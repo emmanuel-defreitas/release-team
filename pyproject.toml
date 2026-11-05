@@ -4,13 +4,21 @@ build-backend = "hatchling.build"
 
 [project]
 name = "release-team"
-version = "0.0.0"
+version = "0.1.0"
 description = "Portable, approval-aware release agent scaffolding"
 readme = "README.md"
 requires-python = ">=3.11"
 license = "MIT"
 dependencies = ["pydantic>=2.10,<3", "PyYAML>=6,<7"]
-classifiers = ["Private :: Do Not Upload"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+]
+
+[project.urls]
+Repository = "https://github.com/emmanuel-defreitas/release-team"
+Issues = "https://github.com/emmanuel-defreitas/release-team/issues"
 
 [project.optional-dependencies]
 openai = ["openai>=2,<3"]
@@ -39,3 +47,6 @@ files = ["src", "tests"]
 testpaths = ["tests"]
 addopts = "--strict-markers"
 markers = ["e2e: end-to-end tests", "eval: paid model evaluations"]
+
+[tool.hatch.build.targets.sdist]
+only-include = ["src", "pyproject.toml", "README.md", "LICENSE", "docs", "examples"]

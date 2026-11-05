@@ -1,13 +1,28 @@
 # Copilot instructions
 
+## Package publishing (current policy)
+
+The reviewed package workflow is `.github/workflows/package.yml`. PRs and pushes
+build and check packages without publishing them. Publication is manual-only,
+from `main`, with `publish=true`, an exact non-placeholder version, and repository
+variable `PUBLISH_PYPI=true`. Leave that variable unset or false until the owner
+explicitly approves a public package upload. Never dispatch publication on the
+owner's behalf without that approval.
+
+The repository is public to support distribution of the reviewed agent skills.
+Registry packages are public, including their bundled source files. GitHub Releases,
+tags, previews, promotion and announcements remain disabled. Keep all inherited
+workflows and their false guards disabled; do not use `publish.yml`. See
+`docs/publishing.md` for setup and first-publication steps.
+
 ## Scaffold publication policy (takes precedence over inherited release instructions)
 
-Public releases, package publication, deployments, previews and announcements are
-disabled for this scaffold. The inherited release/publish workflow jobs and the
+Public releases, deployments, previews and announcements are disabled. Package
+publication follows the manual approval policy above. The inherited release/publish workflow jobs and the
 next-lane preview job have unconditional false guards. Tags and repository variables
-are not approval. Do not re-enable these jobs, push local work to a public repository,
-or announce the project without explicit approval. Existing template automation is
-retained for future reviewed adoption; do not run `make tag-release` or bootstrap
+are not approval. Do not re-enable these jobs, create releases or tags, deploy
+previews, or announce the project without explicit approval. Existing template
+automation is retained for future reviewed adoption; do not run `make tag-release` or bootstrap
 remote repository settings as part of local setup.
 
 Feature branches and local checks remain supported. `make ci` verifies the package
@@ -50,6 +65,13 @@ Targets detect the stack from `pyproject.toml`, `package.json`, `Cargo.toml` or 
   `feat` minor, else patch). Do not edit versions, tags or `CHANGELOG.md` by hand.
 - **Workflows:** `.github/workflows/*.yml` are plain workflows; steps call `make` targets. Pin third-party
   actions to a commit SHA with a version comment. Keep jobs least-privilege.
+  `release-team.yml` is a manual button that runs the agents and posts drafts as a PR comment; it never
+  publishes, and only its `comment` job (which has no OpenAI key) may write to PRs.
+- **Release Team runner:** `make release-team-drafts OBJECTIVE="..."` runs draft-only agents locally;
+  it uses offline mode unless OpenAI settings are explicitly present and writes only ignored output.
+- **Codex plugin:** `plugins/release-team-actions/` is a skills-only package containing the Release
+  Team workflow template and comment renderer. It does not bundle the Python package or a complete
+  target-repository toolchain; follow its `SKILL.md` prerequisites before copying the assets.
 - **Docs move with automation:** update `AGENTS.md`, `README.md`, and `.github/WORKFLOW.md` in the same PR.
 - **Template stays generic:** stack specifics go behind `scripts/stack.sh` or `.github/skills/`.
 - **Skills:** `.github/skills/<name>/SKILL.md`, frontmatter `name` equal to the directory and a one-line

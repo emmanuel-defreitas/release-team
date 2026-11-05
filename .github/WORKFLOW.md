@@ -1,13 +1,28 @@
 # Operating the pipeline
 
+## Package publishing (current policy)
+
+The reviewed package workflow is `.github/workflows/package.yml`. PRs and pushes
+build and check packages without publishing them. Publication is manual-only,
+from `main`, with `publish=true`, an exact non-placeholder version, and repository
+variable `PUBLISH_PYPI=true`. Leave that variable unset or false until the owner
+explicitly approves a public package upload. Never dispatch publication on the
+owner's behalf without that approval.
+
+The repository is public to support distribution of the reviewed agent skills.
+Registry packages are public, including their bundled source files. GitHub Releases,
+tags, previews, promotion and announcements remain disabled. Keep all inherited
+workflows and their false guards disabled; do not use `publish.yml`. See
+`docs/publishing.md` for setup and first-publication steps.
+
 ## Scaffold publication policy (takes precedence over inherited release instructions)
 
-Public releases, package publication, deployments, previews and announcements are
-disabled for this scaffold. The inherited release/publish workflow jobs and the
+Public releases, deployments, previews and announcements are disabled. Package
+publication follows the manual approval policy above. The inherited release/publish workflow jobs and the
 next-lane preview job have unconditional false guards. Tags and repository variables
-are not approval. Do not re-enable these jobs, push local work to a public repository,
-or announce the project without explicit approval. Existing template automation is
-retained for future reviewed adoption; do not run `make tag-release` or bootstrap
+are not approval. Do not re-enable these jobs, create releases or tags, deploy
+previews, or announce the project without explicit approval. Existing template
+automation is retained for future reviewed adoption; do not run `make tag-release` or bootstrap
 remote repository settings as part of local setup.
 
 Feature branches and local checks remain supported. `make ci` verifies the package
@@ -62,6 +77,7 @@ Secrets (repository level unless an environment is named):
 | `CARGO_REGISTRY_TOKEN` (env `crates`)             | `PUBLISH_CRATES`                                    |
 | `EXPO_TOKEN` (env `eas`)                          | `EAS_BUILD_PROFILE`                                 |
 | provider tokens (env `preview` / `production`)    | `PREVIEW_DEPLOY_COMMAND` / `DEPLOY_COMMAND`         |
+| `OPENAI_API_KEY`                                  | Optional. `release-team.yml` with OpenAI drafts     |
 
 PyPI uses trusted publishing (OIDC): register the repo and the `pypi` environment on pypi.org, no secret.
 
@@ -81,10 +97,16 @@ Variables:
 | `EAS_BUILD_PROFILE`                                        | Queues an EAS build for that profile                                     |
 | `PREVIEW_DEPLOY_COMMAND`, `DEPLOY_COMMAND`                 | Shell run after `next` pushes / production tags                          |
 | `DEPENDENCY_REVIEW`, `CODEQL`                              | `false` switches that security job off                                   |
+| `OPENAI_MODEL`                                             | With `OPENAI_API_KEY`, `release-team.yml` uses OpenAI on `auto`          |
 
 Locally: `make env-init` creates `.env` (mode 600) from `.env.example`; `make env-check` diffs keys;
 `make secrets-push [ENV_FILE=.env.ci] [ENVIRONMENT=npm]` and `make secrets-vars-push` load dotenv files into
 GitHub (names are listed for confirmation, values never printed); `make secrets-list` shows names only.
+
+For a local Release Team smoke test, run `make release-team-drafts OBJECTIVE="Draft notes"`.
+The runner selects `offline` unless both `OPENAI_API_KEY` and `OPENAI_MODEL` are present, removes the
+key before offline commands, and writes draft JSON plus a summary to ignored `release-team-out/` files.
+It never posts, publishes, tags, releases, or deploys.
 
 ## 3. Day to day
 
@@ -112,6 +134,29 @@ make cleanup-local              # prune local branches whose remote is gone
 
 `make tag-release` is idempotent: an existing tag is skipped. Everything is parameterized on `TRUNK`
 (default `main`).
+
+### Release Team drafts (`release-team.yml`)
+
+A manual `workflow_dispatch` run (Actions > Release Team > Run workflow, or
+`gh workflow run release-team.yml -f objective="Draft notes for v0.2.0" -f pr_number=42`). It plans the
+five agents, adds the PR's title, description, commit headlines and changed files as evidence, runs
+`release-team workflow`, and renders the results with `scripts/release-team-comment.sh`.
+
+- **Inputs:** `objective` (required), `pr_number` (blank = run summary only), `runtime`
+  (`auto` | `offline` | `openai`). `auto` uses OpenAI only when the `OPENAI_API_KEY` secret and the
+  `OPENAI_MODEL` variable both exist, otherwise offline placeholder drafts.
+- **Jobs:** `draft` (`contents: read`, `pull-requests: read`; the only job that sees the OpenAI key)
+  uploads `comment.md` and `results.json` as a 7-day run artifact. `comment` (`pull-requests: write`, no
+  key) creates or updates one PR comment marked `<!-- release-team-drafts -->`. It runs even when a task
+  failed; `draft` then fails last so the run is red.
+- **Drafts only:** it never releases, tags, pushes or publishes, and it does not touch the disabled jobs
+  in `release.yml`, `publish.yml` or `next.yml`.
+- The Run workflow button appears only once the file is on the default branch (`main`).
+- The workflow and renderer must first be installed at `.github/workflows/release-team.yml` and
+  `scripts/release-team-comment.sh`; generated repositories can copy them from the skill assets.
+- The Codex package at `plugins/release-team-actions/` is skills-only. It does not bundle the
+  `release-team` Python package or the target repository's `.github/actions/setup`, `scripts/stack.sh`,
+  or `scripts/lib.sh`; verify those prerequisites before copying the two assets into another repo.
 
 ## 5. Troubleshooting
 
