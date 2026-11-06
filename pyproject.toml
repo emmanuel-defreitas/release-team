@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "release-team"
-version = "0.0.0"
+version = "0.1.0"
 description = "Portable, approval-aware release agent scaffolding"
 readme = "README.md"
 requires-python = ">=3.11"
