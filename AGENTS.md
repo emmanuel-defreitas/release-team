@@ -104,6 +104,7 @@ runners. Each stack has a skill with the conventions and pitfalls.
 7. **Keep it generic.** Do not bake a product, framework or package manager into template files that
    downstream repos inherit; put stack specifics behind `scripts/stack.sh` or a skill.
 8. **No local agent state in git**: `.claude/`, `.agents/`, `.codex/`, `.worktrees/`, `.env`.
+   The only exception is `.agents/plugins/marketplace.json`, the reviewed Codex distribution manifest.
 
 ## Branches, PRs and releases
 
@@ -164,3 +165,10 @@ this file.
 3. Run `make dependabot` once the first stack manifest exists.
 4. Delete skills and `.env.example` sections for stacks you do not use.
 5. Replace the "template" wording in this file with the real product description.
+
+## Codex marketplace
+
+`.agents/plugins/marketplace.json` registers `release-team-actions` from
+`plugins/release-team-actions/`. Keep local agent state ignored.
+Validate discovery and installation with an isolated `CODEX_HOME`. See the
+README Codex plugin section for installation commands.
