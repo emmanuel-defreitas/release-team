@@ -1,0 +1,17 @@
+{
+  "name": "release-team",
+  "plugins": [
+    {
+      "name": "release-team-actions",
+      "source": {
+        "source": "local",
+        "path": "./plugins/release-team-actions"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_USE"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

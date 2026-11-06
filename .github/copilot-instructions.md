@@ -84,3 +84,9 @@ Targets detect the stack from `pyproject.toml`, `package.json`, `Cargo.toml` or 
 - `gitleaks` runs as a pre-commit hook and as the required `Secret Scan` workflow. Never use
   `--no-verify`; if it fires, remove the secret and rotate it.
 - Do not commit `.claude/`, `.agents/`, `.codex/`, `.worktrees/` or workflow logs.
+
+## Codex marketplace
+
+Track `.agents/plugins/marketplace.json` as the sole exception to ignored local
+agent state. It registers `plugins/release-team-actions/`. Validate plugin discovery
+and installation in an isolated `CODEX_HOME`. Installation commands are in README.md.
