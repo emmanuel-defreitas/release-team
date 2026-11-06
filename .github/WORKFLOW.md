@@ -176,3 +176,22 @@ five agents, adds the PR's title, description, commit headlines and changed file
 `make selftest` runs `tests/template/` (stack detection, SemVer, versions, PR guard, secrets, changelog, agent
 assets). Keep it green when you change `scripts/`. Lint workflows with `actionlint` and scripts with
 `shellcheck -S warning -x scripts/*.sh .github/scripts/*.sh` (both also run as pre-commit hooks).
+
+## Codex plugin distribution
+
+The marketplace manifest at `.agents/plugins/marketplace.json` exposes
+`release-team-actions@release-team`. Its source is `plugins/release-team-actions/`.
+The manifest is distribution metadata, not local agent state.
+
+From the repository root, register and install the local plugin:
+
+```sh
+codex plugin marketplace add .
+codex plugin add release-team-actions@release-team
+codex plugin list --marketplace release-team --json
+```
+
+For validation, set `CODEX_HOME` to a temporary directory for all three commands.
+Verify that the output reports `installed: true` and `enabled: true`.
+Do not install into the user profile as part of repository tests.
+See README.md for Git-based installation after the manifest reaches `main`.

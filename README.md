@@ -93,6 +93,40 @@ Release Team Actions skill, the reviewed workflow template, and the mention-safe
 comment renderer. It does not include an MCP server, credentials, or the
 `release-team` Python package.
 
+### Install the Codex plugin
+
+Use a Codex CLI that provides `codex plugin marketplace add` and `codex plugin add`.
+The commands below were verified with Codex CLI `0.166.0`.
+
+From this repository checkout, run:
+
+```sh
+codex plugin marketplace add .
+codex plugin add release-team-actions@release-team
+codex plugin list --marketplace release-team --json
+```
+
+The list output reports `installed: true` and `enabled: true`.
+Start a new Codex session in your target repository. Invoke the skill:
+
+```text
+$release-team-actions review this repository and help me configure the Release Team workflow.
+```
+
+After the marketplace manifest reaches `main`, install directly from GitHub:
+
+```sh
+codex plugin marketplace add emmanuel-defreitas/release-team --ref main
+codex plugin add release-team-actions@release-team
+```
+
+For a fixed revision, replace `main` with a commit SHA that contains the marketplace manifest.
+The original v0.1.0 release commit lacks that manifest. These commands need the packaging fix as well as the plugin files.
+
+Plugin installation loads the skill and bundled templates. It does not install the Python package or configure a workflow.
+
+### Configure the target repository
+
 Before installing the bundled workflow in another repository, verify that the
 target provides Python 3.11+, `uv`, `jq`, `gh`, and `bash`; a locked `uv.lock`
 that makes `uv run --locked release-team` available; and a compatible
