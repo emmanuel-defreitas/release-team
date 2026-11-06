@@ -6,7 +6,7 @@
 #
 # .github/skills is the single committed source of truth. .claude/ and .agents/
 # are gitignored, local-only views of it so Claude Code, Codex and Zed find the
-# same skills Copilot reads.
+# same skills Copilot reads. The Codex marketplace manifest is distribution metadata.
 
 set -euo pipefail
 
@@ -57,11 +57,11 @@ cmd_check() {
     done
   fi
 
-  for f in .mcp.json .github/mcp.json; do
+  for f in .mcp.json .github/mcp.json .agents/plugins/marketplace.json; do
     if [ -f "$f" ] && have jq && ! jq empty "$f" >/dev/null 2>&1; then fail "$f is not valid JSON"; fi
   done
 
-  if [ -n "$(git ls-files .claude .agents .worktrees 2>/dev/null)" ]; then
+  if [ -n "$(git ls-files .claude .agents .worktrees ':!.agents/plugins/marketplace.json' 2>/dev/null)" ]; then
     fail "local-only agent state is tracked by git (.claude/, .agents/ or .worktrees/); untrack it"
   fi
 

@@ -42,6 +42,20 @@ mkdir .claude && echo x > .claude/state && git add -f .claude/state
 assert_fail "tracked local agent state is rejected" "$A" check
 
 scaffold
+mkdir -p .agents/plugins
+printf '{"name":"demo","plugins":[]}\n' > .agents/plugins/marketplace.json
+git add -f .agents/plugins/marketplace.json
+assert_ok "tracked Codex marketplace is allowed" "$A" check
+printf '{}\n' > .agents/plugins/local-state.json
+git add -f .agents/plugins/local-state.json
+assert_fail "marketplace exception rejects sibling state" "$A" check
+
+scaffold
+mkdir -p .agents/plugins
+printf '{ bad\n' > .agents/plugins/marketplace.json
+assert_fail "invalid marketplace JSON is rejected" "$A" check
+
+scaffold
 echo '{ bad' > .mcp.json
 assert_fail "invalid MCP json is rejected" "$A" check
 
